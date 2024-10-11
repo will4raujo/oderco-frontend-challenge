@@ -10,7 +10,7 @@ export default function Header() {
   const [isAuthenticated, setIsAuthenticated] = useState(true);
   
   return (
-    <header className=" bg-[#141034] h-16 p-4 flex justify-between items-center">
+    <header className=" bg-[#141034] h-16 p-4 flex justify-between items-center border-b-white border-b-[1px]">
         <Menu className="lg:hidden" color="#14b7dc"/>
         <div className="">
         <Image src={logo} alt="logo" className="hidden md:block w-[200px]" />
