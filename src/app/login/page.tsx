@@ -17,6 +17,7 @@ import Image from "next/image";
 import logo from "../../../public/logo-admin.svg";
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   email: z.string().email({
@@ -29,6 +30,7 @@ const formSchema = z.object({
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -40,6 +42,8 @@ export default function LoginPage() {
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
     console.log(data);
+    router.push('/admin/products');
+
   };
 
   return (
