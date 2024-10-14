@@ -1,4 +1,3 @@
-'use client'
 import { ColumnDef } from "@tanstack/react-table";
 import { EllipsisVertical, ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button"
@@ -22,7 +21,18 @@ export type Product = {
 export const columns: ColumnDef<Product>[] = [
   {
     accessorKey: "id",
-    header: "ID",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="pl-0"
+        >
+          Id
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
   },
   {
     accessorKey: "image",
@@ -45,11 +55,33 @@ export const columns: ColumnDef<Product>[] = [
   },
   {
     accessorKey: "category",
-    header: "Categoria",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="pl-0"
+        >
+          Categoria
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
   },
   {
     accessorKey: "price",
-    header: () => <div className="text-center">Preço</div>,
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="pl-0 flex flex-start"
+        >
+          Nome
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
     cell: ({ row }) => {
       const price = parseFloat(row.getValue("price"));
       const formattedPrice = new Intl.NumberFormat("pt-BR", {
@@ -57,7 +89,7 @@ export const columns: ColumnDef<Product>[] = [
         currency: "BRL",
       }).format(price);
 
-      return <div className="text-center">{formattedPrice}</div>;
+      return <div className="text-start">{formattedPrice}</div>;
     }
   },
   {

@@ -51,11 +51,6 @@ export default async function ProductsPage() {
               <SelectItem value="system">System</SelectItem>
             </SelectContent>
           </Select>
-
-          <div className="w-full xl:w-[50%] col-span-1 md:col-span-2 xl:col-span-4 relative">
-            <Search className="absolute top-[18px] left-4 transform -translate-y-1/2" size={17} color="#141034" />
-            <Input placeholder="Search" className="pl-10" />
-          </div>
         </div>
         <Button className="">Cadastrar</Button>
       </div>
