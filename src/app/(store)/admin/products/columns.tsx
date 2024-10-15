@@ -100,7 +100,7 @@ export const columns: ColumnDef<Product>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           className="pl-0 flex flex-start"
         >
-          Nome
+          Preço
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )
