@@ -37,20 +37,25 @@ const formSchema = z.object({
   price: z.number().min(0.01, { message: 'O preço deve ser maior que 0' }),
   description: z.string().min(3, { message: 'A descrição deve conter no mínimo 3 caracteres' }),
   category: z.string().min(1, { message: 'Selecione uma categoria' }),
-  image: z.string(),
+  image: z.string().min(1, { message: 'Selecione uma imagem' }),
 })
 
 export default function ProductsPage() {
   const [data, setData] = useState<Product[]>([]);
   const [name, setName] = useState("");
-  const [price, setPrice] = useState("R$ 0,00");
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
-  const [description, setDescription] = useState("");
   const [categories, setCategories] = useState<Category[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+  const [price, setPrice] = useState("R$ 0,00");
+  const [description, setDescription] = useState("");
+  const [image, setImage] = useState<string>("");
+  const [imageName, setImageName] = useState("");
+  const [isFileInputVisible, setIsFileInputVisible] = useState(false);
+
+  const [open, setOpen] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
   const { toast } = useToast();
-  const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false);
 
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value;
@@ -73,9 +78,41 @@ export default function ProductsPage() {
     const files = event.target.files;
     if (files && files[0]) {
       const file = files[0];
-      console.log("File selected:", file.name);
+
+      if (!['image/jpeg', 'image/png'].includes(file.type)) {
+        toast({ 
+          description: "Formato de imagem inválido. Apenas JPEG e PNG são aceitos.",
+          variant: "destructive",
+          title: "Erro ao selecionar imagem"
+        });
+        return;
+      }
+
+      if (file.name.length > 40) {
+        setImageName(file.name.slice(0, 40) + '...');
+      } else {
+        setImageName(file.name);
+      }
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        setImage(base64String);
+      };
+
+      reader.readAsDataURL(file);
     }
   };
+
+  const handleReset = () => {
+    setName("");
+    setPrice("R$ 0,00");
+    setSelectedCategory(null);
+    setDescription("");
+    setImage("");
+    setImageName("");
+    setErrors({});
+  }
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -84,7 +121,9 @@ export default function ProductsPage() {
       price: parseFloat(price.replace(/[^0-9]/g, '')) / 100,
       description,
       category: selectedCategory?.name,
-      image: "nome-da-imagem.png",
+      image,
+      cretedAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
 
     const validation = formSchema.safeParse(productData);
@@ -199,16 +238,18 @@ export default function ProductsPage() {
                 onChange={(e) => setDescription(e.target.value)}
               />
               <div className="flex gap-4 items-center">
-                <Input
-                  id="image"
-                  type="file"
-                  ref={fileInputRef}
-                  style={{ display: 'none' }}
-                  onChange={handleFileChange}
-                />
-                <Button onClick={handleButtonClick} className={`flex gap-2 w-full text-center ${errors.image ? 'border-red-500' : ''} `} variant="outline" >
+                {isFileInputVisible && (
+                  <Input
+                    id="image"
+                    type="file"
+                    ref={fileInputRef}
+                    style={{ display: 'none' }}
+                    onChange={handleFileChange}
+                  />
+                )}
+                <Button type="button" onClick={handleButtonClick} className={`overflow-hidden overflow-ellipsis flex gap-2 w-full text-center ${errors.image ? 'border-red-500' : ''} `} variant="outline" >
                   <ImageUp />
-                  Escolher Imagem
+                  {imageName || 'Selecionar imagem'}
                 </Button>
               </div>
               <DialogFooter className="justify-start md:justify-between">

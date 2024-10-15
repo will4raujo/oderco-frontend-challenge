@@ -54,6 +54,25 @@ export const columns: ColumnDef<Product>[] = [
   {
     accessorKey: "image",
     header: "Imagem",
+    cell: ({ row }) => {
+      let image = row.getValue<string>("image");
+
+      if (!image.startsWith("data:image")) {
+        const isPng = image.includes("iVBORw0KGgo"); // Check if the image is a PNG
+        const base64Prefix = isPng ? "data:image/png;base64," : "data:image/jpeg;base64,";
+        image = `${base64Prefix}${image}`;
+      }
+
+      return (
+        <Image
+          src={image}
+          alt="Product"
+          className="h-10 w-10 object-cover"
+          width={50}
+          height={50}
+        />
+      );
+    },
   },
   {
     accessorKey: "name",
