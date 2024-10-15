@@ -29,11 +29,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-
-
 import { Button } from "@/components/ui/button"
 import { useState } from "react";
-import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { Input } from "@/components/ui/input";
 import { ChevronLeftIcon, ChevronRightIcon, Search } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -74,46 +71,37 @@ export function DataTable<TData, TValue>({
 
   return (
     <>
-      <div className="flex items-center py-4 relative">
-        <Search className="absolute top-[35px] left-4 transform -translate-y-1/2" size={17} color="#141034" />
-        <Input
-          placeholder="Busca por nome"
-          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("name")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm pl-10"
-        />
+      <div className="flex gap-4 items-center">
+        <div className="flex items-center py-4 relative w-[400px]">
+          <Search className="absolute top-[35px] left-4 transform -translate-y-1/2" size={17} color="#141034" />
+          <Input
+            placeholder="Busca por nome"
+            value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+            onChange={(event) =>
+              table.getColumn("name")?.setFilterValue(event.target.value)
+            }
+            className="max-w-sm pl-10"
+          />
+        </div>
+        <Select
+          onValueChange={(value) => {
+            if (value === "recentes") {
+              table.setSorting([{ id: "created_at", desc: true }]);
+            } else {
+              table.setSorting([]);
+            }
+          }}
+        >
+          <SelectTrigger className="w-40">
+            <SelectValue placeholder="Ordenar por" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="recentes">Mais Recentes</SelectItem>
+            <SelectItem value="nome">Nome</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="ml-auto">
-            Colunas
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          {table
-            .getAllColumns()
-            .filter(
-              (column) => column.getCanHide()
-            )
-            .map((column) => {
-              return (
-                <DropdownMenuCheckboxItem
-                  key={column.id}
-                  className="capitalize"
-                  checked={column.getIsVisible()}
-                  onCheckedChange={(value) =>
-                    column.toggleVisibility(!!value)
-                  }
-                >
-                  {column.id}
-                </DropdownMenuCheckboxItem>
-              )
-            })}
-        </DropdownMenuContent>
-      </DropdownMenu>
-      <div className="text-sm text-muted-foreground">
+      <div className="text-sm text-muted-foreground pl-2">
         {table.getFilteredSelectedRowModel().rows.length} of{" "}
         {table.getFilteredRowModel().rows.length} produto(s) selecionado(s).
       </div>
@@ -162,7 +150,7 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-center space-x-6 lg:space-x-8 mt-4">
+      <div className="flex items-center justify-center space-x-6 lg:space-x-8 mt-6">
         <div className="flex items-center space-x-2">
           <p className="text-sm font-medium">Linhas por página</p>
           <Select
