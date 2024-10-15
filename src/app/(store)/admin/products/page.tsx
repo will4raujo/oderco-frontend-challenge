@@ -14,7 +14,8 @@ import { Category } from "@/models/category.model";
 import { Toaster } from "@/components/ui/toaster"
 import { Product } from "@/models/product.model";
 import { z } from "zod";
-import { useToast } from "@/hooks/use-toast"
+import { useToast } from "@/hooks/use-toast";
+import ReactLoading from 'react-loading';
 
 async function getData(): Promise<Product[]> {
   const response = await fetch('http://localhost:8080/products');
@@ -49,7 +50,7 @@ export default function ProductsPage() {
   const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
-
+  const [loading, setLoading] = useState(false);
 
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value;
@@ -90,17 +91,16 @@ export default function ProductsPage() {
     if (!validation.success) {
       const newErrors = validation.error.flatten().fieldErrors;
       setErrors(newErrors);
-      toast({ description: "Por favor, corrija os erros antes de continuar." });
+      toast({ 
+        description: "Por favor, corrija o(s) campo(s) em destaque.",
+        variant: "destructive",
+        title: "Erro ao cadastrar produto."
+      });
       return;
     }
 
-    errors && toast({
-      description: "Por favor, corrija os erros antes de continuar.",
-      variant: "destructive",
-      title: "Erro ao cadastrar produto."
-    });
-
     try {
+      setLoading(true);
       const response = await fetch('http://localhost:8080/products', {
         method: 'POST',
         headers: {
@@ -114,9 +114,10 @@ export default function ProductsPage() {
       setErrors({});
       toast({ description: "Produto cadastrado com sucesso!" });
       setOpen(false);
-      
+      setLoading(false);
     } catch (error) {
       toast({ description: "Erro ao cadastrar produto." });
+      setLoading(false);
     }
   }
 
@@ -216,7 +217,9 @@ export default function ProductsPage() {
                     Fechar
                   </Button>
                 </DialogClose>
-                <Button type="submit">Cadastrar</Button>
+                <Button type="submit">
+                  {loading ? <ReactLoading type="spin" color="#fff" height={20} width={20} /> : 'Cadastrar'}
+                </Button>
               </DialogFooter>
             </form>
           </DialogContent>
