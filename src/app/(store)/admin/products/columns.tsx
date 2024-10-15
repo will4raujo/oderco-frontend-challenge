@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Product } from "@/models/product.model";
+import Image from "next/image";
 
 export const columns: ColumnDef<Product>[] = [
   {
@@ -133,4 +134,17 @@ export const columns: ColumnDef<Product>[] = [
       )
     },
   },
+  {
+    accessorKey: "updatedAt",
+    header: "Atualizado em",
+    cell: ({ row }) => {
+      const date = new Date(row.getValue("updatedAt"));
+      const formattedDate = new Intl.DateTimeFormat("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      }).format(date);
+      return <div className="text-start">{formattedDate}</div>;
+    }
+  }
 ];

@@ -5,4 +5,6 @@ export type Product = {
   image: string;
   category: string;
   description: string;
+  createdAt: string;
+  updatedAt: string;
 };
