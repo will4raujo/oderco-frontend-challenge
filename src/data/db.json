@@ -5,175 +5,88 @@
       "name": "Processador Intel Core i9-13900K",
       "price": 3200,
       "image": "https://via.placeholder.com/150",
-      "category": "Processadores"
+      "category": "Processadores",
+      "description": "Processador de alta performance com 24 núcleos para jogos e multitarefas intensas."
     },
     {
       "id": "2",
-      "name": "Processador AMD Ryzen 9 7950X",
-      "price": 2800,
-      "image": "https://via.placeholder.com/150",
-      "category": "Processadores"
-    },
-    {
-      "id": "3",
       "name": "Placa de Vídeo NVIDIA GeForce RTX 4090",
       "price": 15000,
       "image": "https://via.placeholder.com/150",
-      "category": "Placas de Vídeo"
+      "category": "Placas de Vídeo",
+      "description": "Placa de vídeo de última geração para gráficos em 4K e jogos de alto desempenho."
     },
     {
-      "id": "4",
-      "name": "Placa de Vídeo AMD Radeon RX 7900 XT",
-      "price": 12000,
-      "image": "https://via.placeholder.com/150",
-      "category": "Placas de Vídeo"
-    },
-    {
-      "id": "5",
+      "id": "3",
       "name": "Memória RAM Kingston Fury Beast 16GB (2x8GB) DDR5",
       "price": 600,
       "image": "https://via.placeholder.com/150",
-      "category": "Memórias RAM"
+      "category": "Memórias RAM",
+      "description": "Kit de memória DDR5 com 16GB e alta velocidade para desempenho superior."
     },
     {
-      "id": "6",
-      "name": "Memória RAM Corsair Vengeance RGB Pro 32GB (2x16GB) DDR4",
-      "price": 1000,
-      "image": "https://via.placeholder.com/150",
-      "category": "Memórias RAM"
-    },
-    {
-      "id": "7",
+      "id": "4",
       "name": "SSD Samsung 970 EVO Plus 1TB NVMe",
       "price": 700,
       "image": "https://via.placeholder.com/150",
-      "category": "Armazenamento"
+      "category": "Armazenamento",
+      "description": "SSD NVMe ultrarrápido com 1TB de armazenamento para alta velocidade e resposta."
     },
     {
-      "id": "8",
-      "name": "SSD Kingston A2000 500GB NVMe",
-      "price": 350,
-      "image": "https://via.placeholder.com/150",
-      "category": "Armazenamento"
-    },
-    {
-      "id": "9",
+      "id": "5",
       "name": "Placa-mãe ASUS ROG Strix B550-F Gaming",
       "price": 1200,
       "image": "https://via.placeholder.com/150",
-      "category": "Placas-mãe"
+      "category": "Placas-mãe",
+      "description": "Placa-mãe AMD compatível com processadores Ryzen, ideal para gamers."
     },
     {
-      "id": "10",
-      "name": "Placa-mãe Gigabyte Z790 AORUS ELITE",
-      "price": 1800,
-      "image": "https://via.placeholder.com/150",
-      "category": "Placas-mãe"
-    },
-    {
-      "id": "11",
+      "id": "6",
       "name": "Fonte Corsair RM750 750W 80 Plus Gold",
       "price": 700,
       "image": "https://via.placeholder.com/150",
-      "category": "Fontes de Alimentação"
+      "category": "Fontes de Alimentação",
+      "description": "Fonte de alimentação de 750W com certificação 80 Plus Gold para eficiência energética."
     },
     {
-      "id": "12",
-      "name": "Fonte EVGA 600W 80 Plus Bronze",
-      "price": 500,
-      "image": "https://via.placeholder.com/150",
-      "category": "Fontes de Alimentação"
-    },
-    {
-      "id": "13",
+      "id": "7",
       "name": "Gabinete Cooler Master MasterBox TD500",
       "price": 600,
       "image": "https://via.placeholder.com/150",
-      "category": "Gabinetes"
+      "category": "Gabinetes",
+      "description": "Gabinete com design moderno e excelente fluxo de ar, ideal para setups de jogos."
     },
     {
-      "id": "14",
-      "name": "Gabinete NZXT H510",
-      "price": 550,
-      "image": "https://via.placeholder.com/150",
-      "category": "Gabinetes"
-    },
-    {
-      "id": "15",
+      "id": "8",
       "name": "Monitor Gamer LG Ultragear 27GL850 27\" QHD 144Hz",
       "price": 1800,
       "image": "https://via.placeholder.com/150",
-      "category": "Monitores"
+      "category": "Monitores",
+      "description": "Monitor 27\" QHD com taxa de atualização de 144Hz para uma experiência de jogo imersiva."
     },
     {
-      "id": "16",
-      "name": "Monitor Samsung Odyssey G5 34\" Ultrawide 100Hz",
-      "price": 3000,
-      "image": "https://via.placeholder.com/150",
-      "category": "Monitores"
-    },
-    {
-      "id": "17",
+      "id": "9",
       "name": "Teclado Mecânico Redragon Kumara RGB",
       "price": 250,
       "image": "https://via.placeholder.com/150",
-      "category": "Teclados"
+      "category": "Teclados",
+      "description": "Teclado mecânico compacto com iluminação RGB e switches de alta durabilidade."
     },
     {
-      "id": "18",
-      "name": "Teclado Gamer Logitech G PRO X RGB",
-      "price": 600,
-      "image": "https://via.placeholder.com/150",
-      "category": "Teclados"
-    },
-    {
-      "id": "19",
+      "id": "10",
       "name": "Mouse Gamer Razer DeathAdder V2",
       "price": 350,
       "image": "https://via.placeholder.com/150",
-      "category": "Mouses"
+      "category": "Mouses",
+      "description": "Mouse gamer ergonômico com sensor óptico de alta precisão e iluminação RGB."
     },
     {
-      "id": "20",
-      "name": "Mouse Gamer Logitech G502 HERO",
-      "price": 300,
-      "image": "https://via.placeholder.com/150",
-      "category": "Mouses"
-    },
-    {
-      "id": "21",
+      "id": "11",
       "name": "Fone de Ouvido HyperX Cloud II",
       "price": 450,
       "image": "https://via.placeholder.com/150",
-      "category": "Headsets"
-    },
-    {
-      "id": "22",
-      "name": "Fone de Ouvido Logitech G733 Lightspeed",
-      "price": 750,
-      "image": "https://via.placeholder.com/150",
-      "category": "Headsets"
-    },
-    {
-      "id": "23",
-      "name": "Mouse Pad Gamer SteelSeries QcK XXL",
-      "price": 150,
-      "image": "https://via.placeholder.com/150",
-      "category": "Mouse Pads"
-    },
-    {
-      "id": "24",
-      "name": "Mouse Pad Gamer Razer Goliathus Chroma",
-      "price": 250,
-      "image": "https://via.placeholder.com/150",
-      "category": "Mouse Pads"
-    },
-    {
-      "id": "25",
-      "name": "Webcam Razer Kiyo",
-      "price": 600,
-      "image": "https://via.placeholder.com/150",
-      "category": "Webcams"
+      "category": "Headsets",
+      "description": "Headset com som surround 7.1, excelente para imersão em jogos."
     }
   ],
   "categories": [
