@@ -217,7 +217,7 @@ export default function ProductsPage() {
                     Fechar
                   </Button>
                 </DialogClose>
-                <Button type="submit">
+                <Button type="submit" disabled={loading} variant="default">
                   {loading ? <ReactLoading type="spin" color="#fff" height={20} width={20} /> : 'Cadastrar'}
                 </Button>
               </DialogFooter>
