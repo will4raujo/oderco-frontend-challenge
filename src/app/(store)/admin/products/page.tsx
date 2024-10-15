@@ -16,6 +16,7 @@ import { Product } from "@/models/product.model";
 import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
 import ReactLoading from 'react-loading';
+import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
 
 async function getData(): Promise<Product[]> {
   const response = await fetch('http://localhost:8080/products');
@@ -71,6 +72,7 @@ export default function ProductsPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleButtonClick = () => {
+    setIsFileInputVisible(true);
     fileInputRef.current?.click();
   };
 
@@ -154,6 +156,7 @@ export default function ProductsPage() {
       toast({ description: "Produto cadastrado com sucesso!" });
       setOpen(false);
       setLoading(false);
+      handleReset();
     } catch (error) {
       toast({ description: "Erro ao cadastrar produto." });
       setLoading(false);
@@ -254,9 +257,7 @@ export default function ProductsPage() {
               </div>
               <DialogFooter className="justify-start md:justify-between">
                 <DialogClose asChild>
-                  <Button type="reset" variant="secondary">
-                    Fechar
-                  </Button>
+                <Button type="button" variant="destructive" onClick={ () => setIsAlertDialogOpen(true)}>Cancelar</Button>
                 </DialogClose>
                 <Button type="submit" disabled={loading} variant="default">
                   {loading ? <ReactLoading type="spin" color="#fff" height={20} width={20} /> : 'Cadastrar'}
@@ -265,6 +266,26 @@ export default function ProductsPage() {
             </form>
           </DialogContent>
         </Dialog>
+        <AlertDialog open={isAlertDialogOpen} onOpenChange={setIsAlertDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Cancelar Cadastro</AlertDialogTitle>
+              <AlertDialogDescription>
+                Tem certeza de que deseja cancelar o cadastro do produto? Todas as informações não salvas serão perdidas.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => setIsAlertDialogOpen(false)}>Não</AlertDialogCancel>
+              <AlertDialogAction onClick={() => {
+                setOpen(false);
+                setIsAlertDialogOpen(false);
+                handleReset();
+              }}>
+                Sim
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
       <DataTable columns={columns} data={data} />
       <Toaster />
