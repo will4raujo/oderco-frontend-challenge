@@ -16,7 +16,7 @@ import { Product } from "@/models/product.model";
 import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
 import ReactLoading from 'react-loading';
-import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
+import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
 
 async function getData(): Promise<Product[]> {
   const response = await fetch('http://localhost:8080/products');
@@ -63,6 +63,17 @@ export default function ProductsPage() {
   const handleEdit = (product: Product) => {
     setEditingProduct(product);
     setOpen(true);
+  };
+
+  const handleDelete = (product: Product) => {
+    fetch(`http://localhost:8080/products/${product.id}`, {
+      method: 'DELETE',
+    }).then(() => {
+      setData((prevData) => prevData.filter((p) => p.id !== product.id));
+      toast({ description: "Produto excluído com sucesso!" });
+    }).catch(() => {
+      toast({ description: "Erro ao excluir produto." });
+    });
   };
 
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -330,7 +341,7 @@ export default function ProductsPage() {
           </AlertDialogContent>
         </AlertDialog>
       </div>
-      <DataTable columns={columns(handleEdit)} data={data}/>
+      <DataTable columns={columns({ handleEdit, handleDelete })} data={data}/>
       <Toaster />
     </main>
   )

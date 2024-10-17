@@ -15,9 +15,10 @@ import Image from "next/image";
 
 type ColumnsProps = {
   handleEdit: (product: Product) => void;
+  handleDelete: (product: Product) => void;
 }
 
-export const columns = (handleEdit: ColumnsProps["handleEdit"]): ColumnDef<Product, keyof Product>[] => [
+export const columns = ({ handleEdit, handleDelete }: ColumnsProps): ColumnDef<Product, keyof Product>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -149,7 +150,7 @@ export const columns = (handleEdit: ColumnsProps["handleEdit"]): ColumnDef<Produ
             <DropdownMenuSeparator />
             <DropdownMenuItem  onClick={() => handleEdit(row.original)}>Editar</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Deletar</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleDelete(row.original)}>Deletar</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       )
