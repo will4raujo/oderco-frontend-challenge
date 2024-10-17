@@ -13,7 +13,11 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Product } from "@/models/product.model";
 import Image from "next/image";
 
-export const columns: ColumnDef<Product>[] = [
+type ColumnsProps = {
+  handleEdit: (product: Product) => void;
+}
+
+export const columns = (handleEdit: ColumnsProps["handleEdit"]): ColumnDef<Product, keyof Product>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -132,8 +136,6 @@ export const columns: ColumnDef<Product>[] = [
     id: "actions",
     header: () => <div className="text-left">Ações</div>,
     cell: ({ row }) => {
-      const payment = row.original
- 
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild >
@@ -145,7 +147,7 @@ export const columns: ColumnDef<Product>[] = [
           <DropdownMenuContent align="start">
             <DropdownMenuLabel>Ações</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Editar</DropdownMenuItem>
+            <DropdownMenuItem  onClick={() => handleEdit(row.original)}>Editar</DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>Deletar</DropdownMenuItem>
           </DropdownMenuContent>

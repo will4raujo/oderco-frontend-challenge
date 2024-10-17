@@ -58,6 +58,13 @@ export default function ProductsPage() {
   const [loading, setLoading] = useState(false);
   const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false);
 
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+
+  const handleEdit = (product: Product) => {
+    setEditingProduct(product);
+    setOpen(true);
+  };
+
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value;
     const formattedValue = formatToBRL(rawValue);
@@ -140,26 +147,51 @@ export default function ProductsPage() {
       return;
     }
 
-    try {
-      setLoading(true);
-      const response = await fetch('http://localhost:8080/products', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(productData),
-      });
-      if (!response.ok) {
-        throw new Error('Erro ao cadastrar produto.');
+    if (editingProduct) {
+      try {
+        setLoading(true);
+        const response = await fetch(`http://localhost:8080/products/${editingProduct.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(productData),
+        });
+        if (!response.ok) {
+          throw new Error('Erro ao editar produto.');
+        }
+        setErrors({});
+        toast({ description: "Produto editado com sucesso!" });
+        setOpen(false);
+        setLoading(false);
+        handleReset();
+      } catch (error) {
+        toast({ description: "Erro ao editar produto." });
+        setLoading(false);
       }
-      setErrors({});
-      toast({ description: "Produto cadastrado com sucesso!" });
-      setOpen(false);
-      setLoading(false);
-      handleReset();
-    } catch (error) {
-      toast({ description: "Erro ao cadastrar produto." });
-      setLoading(false);
+      return;
+    } else {
+      try {
+        setLoading(true);
+        const response = await fetch('http://localhost:8080/products', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(productData),
+        });
+        if (!response.ok) {
+          throw new Error('Erro ao cadastrar produto.');
+        }
+        setErrors({});
+        toast({ description: "Produto cadastrado com sucesso!" });
+        setOpen(false);
+        setLoading(false);
+        handleReset();
+      } catch (error) {
+        toast({ description: "Erro ao cadastrar produto." });
+        setLoading(false);
+      }
     }
   }
 
@@ -176,6 +208,17 @@ export default function ProductsPage() {
     fetchData();
     fetchCategories();
   }, []);
+
+  useEffect(() => {
+    if (editingProduct) {
+      setName(editingProduct.name);
+      setPrice(formatToBRL(editingProduct.price.toString()));
+      setDescription(editingProduct.description);
+      setImage(editingProduct.image);
+      setImageName(editingProduct.name);
+      setSelectedCategory(categories.find((category) => category.name === editingProduct.category) || null);
+    }
+  }, [editingProduct]);
 
   return (
     <main className='flex flex-col mx-auto lg:w-[1024px] xl:w-[1280px] 2xl:w-[1440px] px-10 my-4'>
@@ -287,7 +330,7 @@ export default function ProductsPage() {
           </AlertDialogContent>
         </AlertDialog>
       </div>
-      <DataTable columns={columns} data={data} />
+      <DataTable columns={columns(handleEdit)} data={data}/>
       <Toaster />
     </main>
   )
