@@ -1,3 +1,4 @@
+'use client'
 import ProductCard from "@/components/molecules/product-card"
 import { Card } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -20,8 +21,26 @@ import {
 } from "@/components/ui/pagination"
 import { Slider } from "@/components/ui/slider"
 import { Search } from "lucide-react"
+import { Product } from "@/models/product.model"
+import { useEffect, useState } from "react"
+
+async function getData(): Promise<Product[]> {
+  try {
+    const response = await fetch('http://localhost:8080/products');
+    return response.json();
+  } catch (error) {
+    console.error(error);
+    alert('Verifique se o comando "npm run start:json-server" está rodando, caso contrário, acesse o arquivo README.md para mais informações');
+    return [];
+  }
+}
 
 export default function CatalogPage() {
+  const [products, setProducts] = useState<Product[]>([]);
+  
+  useEffect(() => {
+    getData().then(setProducts);
+  }, []);
   return (
     <>
       <main className="flex mx-auto">
@@ -97,15 +116,11 @@ export default function CatalogPage() {
             <Search className="absolute top-[18px] left-4 transform -translate-y-1/2" size={17} color="#141034"/>
             <Input placeholder="Search" className="pl-10"/>
           </div>
-          <ProductCard />
-          <ProductCard />
-          <ProductCard />
-          <ProductCard />
-          <ProductCard />
-          <ProductCard />
-          <ProductCard />
-          <ProductCard />
-          <ProductCard />
+          {
+            products.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))
+          }
         </section>
       </main>
       <footer className="pb-6">
