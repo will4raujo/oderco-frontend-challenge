@@ -23,8 +23,16 @@ import { Search } from "lucide-react"
 import { Product } from "@/models/product.model"
 import { useEffect, useState } from "react"
 import { debounce } from "lodash"
+import { Category } from "@/models/category.model"
 
-async function getData(search: string, page: number, limit: number, sorting: string): Promise<{ products: Product[], totalItems: number }> {
+async function getData(
+  search: string,
+  page: number,
+  limit: number,
+  sorting: string,
+  priceRange: number[],
+  categoriesSelected: number[]
+): Promise<{ products: Product[], totalItems: number }> {
   try {
     let url = `http://localhost:8080/products?_page=${page}&_limit=${limit}`;
 
@@ -36,8 +44,17 @@ async function getData(search: string, page: number, limit: number, sorting: str
       url += `&_sort=${sorting}&_order=asc`;
     }
 
+    if (priceRange.length === 2) {
+      url += `&price_gte=${priceRange[0]}&price_lte=${priceRange[1]}`;
+    }
+
+    if (categoriesSelected.length > 0) {
+      const categoriesQuery = categoriesSelected.map(cat => `categoryId=${cat}`).join('&');
+      url += `&${categoriesQuery}`;
+    }
+
     const response = await fetch(url);
-    const products = await response.json();    
+    const products = await response.json();
     const totalItems = parseInt(response.headers.get('X-Total-Count') || '0', 10);
 
     return { products, totalItems };
@@ -48,25 +65,37 @@ async function getData(search: string, page: number, limit: number, sorting: str
   }
 }
 
+async function getCategories(): Promise<Category[]> {
+  try {
+    const response = await fetch('http://localhost:8080/categories');
+    return response.json();
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}
+
 export default function CatalogPage() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [totalItems, setTotalItems] = useState<number>(0);
   const [search, setSearch] = useState<string>('');
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [itemsPerPage] = useState<number>(12);
   const [sorting, setSorting] = useState<string>('');
-  const [priceRange, setPriceRange] = useState<number[]>([0]);
+  const [priceRange, setPriceRange] = useState<number[]>([0, 10000]);
+  const [categoriesSelected, setCategoriesSelected] = useState<number[]>([]);
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const [cache, setCache] = useState<{ [key: string]: Product[] }>({});
 
   const fetchProducts = debounce(() => {
-    const cacheKey = `${search}-${currentPage}-${sorting}`;
-  
+    const cacheKey = `${search}-${currentPage}-${sorting}-${priceRange}-${categoriesSelected.join(',')}`;
+
     if (cache[cacheKey]) {
       setProducts(cache[cacheKey]);
     } else {
-      getData(search, currentPage, itemsPerPage, sorting).then(({ products, totalItems }) => {
+      getData(search, currentPage, itemsPerPage, sorting, priceRange, categoriesSelected).then(({ products, totalItems }) => {
         setProducts(products);
         setTotalItems(totalItems);
         setCache((prevCache) => ({ ...prevCache, [cacheKey]: products }));
@@ -74,15 +103,24 @@ export default function CatalogPage() {
     }
   }, 300);
 
+  const fetchCategories = async () => {
+    const categories = await getCategories();
+    setCategories(categories);
+  }
+
   useEffect(() => {
     fetchProducts();
-  }, [search, currentPage, sorting]);
+  }, [search, currentPage, sorting, priceRange, categoriesSelected]);
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
 
   return (
     <>
       <main className="flex mx-auto">
         <aside className="hidden px-2 2xl:px-4 py-6 h-full w-60 2xl:w-64 lg:flex flex-col gap-6">
-        <Select onValueChange={(value) => setSorting(value)} value={sorting}>
+          <Select onValueChange={(value) => setSorting(value)} value={sorting}>
             <SelectTrigger className="w-40">
               <SelectValue placeholder="Ordenar por" />
             </SelectTrigger>
@@ -97,54 +135,34 @@ export default function CatalogPage() {
               <span>Preço</span>
               <span>R$ 0 a R$ 10.000,00</span>
             </div>
-            <Slider max={10000} step={1000} value={priceRange} />
+            <Slider
+              max={1000}
+              step={100}
+              value={priceRange}
+              onValueChange={(value) => setPriceRange(value)}
+            />
 
             <span>Categorias</span>
-
-            <div className="flex gap-2 items-center">
-              <Checkbox id="eletronicos" />
-              <div className="grid gap-1.5 leading-none">
-                <label
-                  htmlFor="eletronicos"
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  Eletrônicos
-                </label>
+            {categories.map((category) => (
+              <div key={category.id} className="flex gap-2 items-center">
+                <Checkbox
+                  id={category.id.toString()}
+                  onCheckedChange={(checked) => {
+                    setCategoriesSelected((prev) =>
+                      checked ? [...prev, category.id] : prev.filter(id => id !== category.id)
+                    );
+                  }}
+                />
+                <div className="grid gap-1.5 leading-none">
+                  <label
+                    htmlFor={category.id.toString()}
+                    className="text-sm font-medium leading-none cursor-pointer"
+                  >
+                    {category.name}
+                  </label>
+                </div>
               </div>
-            </div>
-            <div className="flex gap-2 items-center">
-              <Checkbox id="eletronicos" />
-              <div className="grid gap-1.5 leading-none">
-                <label
-                  htmlFor="eletronicos"
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  Eletrônicos
-                </label>
-              </div>
-            </div>
-            <div className="flex gap-2 items-center">
-              <Checkbox id="eletronicos" />
-              <div className="grid gap-1.5 leading-none">
-                <label
-                  htmlFor="eletronicos"
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  Eletrônicos
-                </label>
-              </div>
-            </div>
-            <div className="flex gap-2 items-center">
-              <Checkbox id="eletronicos" />
-              <div className="grid gap-1.5 leading-none">
-                <label
-                  htmlFor="eletronicos"
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  Eletrônicos
-                </label>
-              </div>
-            </div>
+            ))}
           </Card>
         </aside>
         <section className="py-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 grid-rows-[46px_auto]">
@@ -167,7 +185,6 @@ export default function CatalogPage() {
               <PaginationItem>
                 <PaginationPrevious href="#" onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} />
               </PaginationItem>
-              {/* Exibir páginas */}
               {[...Array(totalPages)].map((_, index) => (
                 <PaginationItem key={index}>
                   <PaginationLink href="#" onClick={() => setCurrentPage(index + 1)}>
