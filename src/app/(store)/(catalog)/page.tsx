@@ -24,23 +24,46 @@ import { Search } from "lucide-react"
 import { Product } from "@/models/product.model"
 import { useEffect, useState } from "react"
 
-async function getData(): Promise<Product[]> {
+async function getData(search: string, page: number, limit: number): Promise<{ products: Product[], totalItems: number }> {
   try {
-    const response = await fetch('http://localhost:8080/products');
-    return response.json();
+    let url = `http://localhost:8080/products?_page=${page}&_limit=${limit}`
+
+    if (search) {
+      url += `&q=${search}`
+    }
+
+    const response = await fetch(url)
+    const totalItems = await fetch(`http://localhost:8080/products`).then(response => response.json()).then(data => data.length);
+    const products = await response.json();
+
+    return { products, totalItems };
   } catch (error) {
     console.error(error);
     alert('Verifique se o comando "npm run start:json-server" está rodando, caso contrário, acesse o arquivo README.md para mais informações');
-    return [];
+    return { products: [], totalItems: 0 };
   }
 }
 
 export default function CatalogPage() {
   const [products, setProducts] = useState<Product[]>([]);
-  
+  const [totalItems, setTotalItems] = useState<number>(0);
+  const [search, setSearch] = useState<string>('');
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [itemsPerPage] = useState<number>(1);
+
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  const fetchProducts = () => {
+    getData(search, currentPage, itemsPerPage).then(({ products, totalItems }) => {
+      setProducts(products);
+      setTotalItems(totalItems);
+    });
+  }
+
   useEffect(() => {
-    getData().then(setProducts);
-  }, []);
+    fetchProducts();
+  }, [search, currentPage]);
+
   return (
     <>
       <main className="flex mx-auto">
@@ -113,39 +136,38 @@ export default function CatalogPage() {
         </aside>
         <section className="py-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 grid-rows-[46px_auto]">
           <div className="w-full xl:w-[50%] col-span-1 md:col-span-2 xl:col-span-4 relative">
-            <Search className="absolute top-[18px] left-4 transform -translate-y-1/2" size={17} color="#141034"/>
-            <Input placeholder="Search" className="pl-10"/>
+            <Search className="absolute top-[18px] left-4 transform -translate-y-1/2" size={17} color="#141034" />
+            <Input placeholder="Search" className="pl-10" value={search} onChange={(event) => setSearch(event.target.value)} />
           </div>
           {
             products.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))
           }
+
         </section>
       </main>
       <footer className="pb-6">
-        <Pagination>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious href="#" />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href="#">1</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href="#">2</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href="#">3</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href="#">4</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationNext href="#" />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
+      {totalPages > 0 && (
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious href="#" onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} />
+              </PaginationItem>
+              {/* Exibir páginas */}
+              {[...Array(totalPages)].map((_, index) => (
+                <PaginationItem key={index}>
+                  <PaginationLink href="#" onClick={() => setCurrentPage(index + 1)}>
+                    {index + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+              <PaginationItem>
+                <PaginationNext href="#" onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))} />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        )}
       </footer>
     </>
   )

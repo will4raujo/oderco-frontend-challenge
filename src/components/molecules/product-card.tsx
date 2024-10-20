@@ -16,10 +16,10 @@ export default function ProductCard({ product }: { product: Product }) {
       const base64Prefix = isPng ? "data:image/png;base64," : "data:image/jpeg;base64,";
       imagePath = `${base64Prefix}${product.image}`;
     } else {
-      imagePath = product.image; // For base64 images with the correct format
+      imagePath = product.image;
     }
   } else {
-    imagePath = '/fallback-image.png'; // Fallback image if no valid product.image
+    imagePath = '/fallback-image.png';
   }
 
   const truncatedName = product.name.length > 44 ? product.name.substring(0, 44) + '...' : product.name;
