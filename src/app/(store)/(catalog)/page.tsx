@@ -13,7 +13,6 @@ import {
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
@@ -23,18 +22,23 @@ import { Slider } from "@/components/ui/slider"
 import { Search } from "lucide-react"
 import { Product } from "@/models/product.model"
 import { useEffect, useState } from "react"
+import { debounce } from "lodash"
 
-async function getData(search: string, page: number, limit: number): Promise<{ products: Product[], totalItems: number }> {
+async function getData(search: string, page: number, limit: number, sorting: string): Promise<{ products: Product[], totalItems: number }> {
   try {
-    let url = `http://localhost:8080/products?_page=${page}&_limit=${limit}`
+    let url = `http://localhost:8080/products?_page=${page}&_limit=${limit}`;
 
     if (search) {
-      url += `&q=${search}`
+      url += `&name_like=${search}`;
     }
 
-    const response = await fetch(url)
-    const totalItems = await fetch(`http://localhost:8080/products`).then(response => response.json()).then(data => data.length);
-    const products = await response.json();
+    if (sorting) {
+      url += `&_sort=${sorting}&_order=asc`;
+    }
+
+    const response = await fetch(url);
+    const products = await response.json();    
+    const totalItems = parseInt(response.headers.get('X-Total-Count') || '0', 10);
 
     return { products, totalItems };
   } catch (error) {
@@ -48,43 +52,52 @@ export default function CatalogPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [totalItems, setTotalItems] = useState<number>(0);
   const [search, setSearch] = useState<string>('');
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [itemsPerPage] = useState<number>(1);
+  const [currentPage, setCurrentPage] = useState<number>(0);
+  const [itemsPerPage] = useState<number>(12);
+  const [sorting, setSorting] = useState<string>('');
+  const [priceRange, setPriceRange] = useState<number[]>([0]);
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const [cache, setCache] = useState<{ [key: string]: Product[] }>({});
 
-  const fetchProducts = () => {
-    getData(search, currentPage, itemsPerPage).then(({ products, totalItems }) => {
-      setProducts(products);
-      setTotalItems(totalItems);
-    });
-  }
+  const fetchProducts = debounce(() => {
+    const cacheKey = `${search}-${currentPage}-${sorting}`;
+  
+    if (cache[cacheKey]) {
+      setProducts(cache[cacheKey]);
+    } else {
+      getData(search, currentPage, itemsPerPage, sorting).then(({ products, totalItems }) => {
+        setProducts(products);
+        setTotalItems(totalItems);
+        setCache((prevCache) => ({ ...prevCache, [cacheKey]: products }));
+      });
+    }
+  }, 300);
 
   useEffect(() => {
     fetchProducts();
-  }, [search, currentPage]);
+  }, [search, currentPage, sorting]);
 
   return (
     <>
       <main className="flex mx-auto">
-        <aside className="hidden px-2 2xl:px-4 py-6 h-full w-60 xl-64 lg:flex flex-col gap-6">
-          <Select>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Theme" />
+        <aside className="hidden px-2 2xl:px-4 py-6 h-full w-60 2xl:w-64 lg:flex flex-col gap-6">
+        <Select onValueChange={(value) => setSorting(value)} value={sorting}>
+            <SelectTrigger className="w-40">
+              <SelectValue placeholder="Ordenar por" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="light">Light</SelectItem>
-              <SelectItem value="dark">Dark</SelectItem>
-              <SelectItem value="system">System</SelectItem>
+              <SelectItem value="updatedAt">Mais Recentes</SelectItem>
+              <SelectItem value="name">Nome</SelectItem>
             </SelectContent>
           </Select>
 
           <Card className="h-full flex flex-col gap-4 border-zinc-400 border-[1px] p-4">
-            <div>
+            <div className="flex justify-between">
               <span>Preço</span>
               <span>R$ 0 a R$ 10.000,00</span>
-              <Slider max={10000} step={1000} />
             </div>
+            <Slider max={10000} step={1000} value={priceRange} />
 
             <span>Categorias</span>
 
@@ -137,7 +150,7 @@ export default function CatalogPage() {
         <section className="py-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 grid-rows-[46px_auto]">
           <div className="w-full xl:w-[50%] col-span-1 md:col-span-2 xl:col-span-4 relative">
             <Search className="absolute top-[18px] left-4 transform -translate-y-1/2" size={17} color="#141034" />
-            <Input placeholder="Search" className="pl-10" value={search} onChange={(event) => setSearch(event.target.value)} />
+            <Input placeholder="Busca por nome" className="pl-10" value={search} onChange={(event) => setSearch(event.target.value)} />
           </div>
           {
             products.map((product) => (
@@ -148,7 +161,7 @@ export default function CatalogPage() {
         </section>
       </main>
       <footer className="pb-6">
-      {totalPages > 0 && (
+        {totalPages > 0 && (
           <Pagination>
             <PaginationContent>
               <PaginationItem>

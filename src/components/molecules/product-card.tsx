@@ -26,12 +26,12 @@ export default function ProductCard({ product }: { product: Product }) {
 
   return (
     <Card className="flex flex-col w-[260px] 2xl:w-[275px] gap-4 border-zinc-400 border-[1px] p-4 h-96">
-      <div className="bg-zinc-500 ">
+      <div>
         <Image 
           src={imagePath || '/fallback-image.png'}
           alt="Product" 
-          width={226}
-          height={226}
+          width={275}
+          height={275}
           className="object-cover"
         />
       </div>
