@@ -1,9 +1,11 @@
 import { Card } from "@/components/ui/card";
 import Image from "next/image";
 import { Product } from "@/models/product.model";
+import { useRouter } from "next/navigation";
 
 export default function ProductCard({ product }: { product: Product }) {
   let imagePath: string;
+  const route = useRouter();
 
   const formatedPrice = new Intl.NumberFormat('pt-BR', {
     style: 'currency',
@@ -25,14 +27,17 @@ export default function ProductCard({ product }: { product: Product }) {
   const truncatedName = product.name.length > 44 ? product.name.substring(0, 44) + '...' : product.name;
 
   return (
-    <Card className="flex flex-col w-[260px] 2xl:w-[275px] gap-4 border-zinc-400 border-[1px] p-4 h-96">
+    <Card 
+      className="flex flex-col w-[260px] 2xl:w-[275px] gap-4 border-zinc-400 border-[1px] p-4 h-96 cursor-pointer"
+      onClick={() => route.push(`/${product.slug}`)}
+    >
       <div>
         <Image 
           src={imagePath || '/fallback-image.png'}
           alt="Product" 
           width={275}
           height={275}
-          className="object-cover"
+          className="object-cover hover:scale-105 transition-transform duration-300"
         />
       </div>
       <div className="flex flex-col h-full justify-between">
