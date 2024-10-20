@@ -10,16 +10,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Product } from "@/models/product.model";
+import Image from "next/image";
 
-export type Product = {
-  id: string;
-  name: string;
-  price: number;
-  image: string;
-  category: string;
-};
+type ColumnsProps = {
+  handleEdit: (product: Product) => void;
+  handleDelete: (product: Product) => void;
+}
 
-export const columns: ColumnDef<Product>[] = [
+export const columns = ({ handleEdit, handleDelete }: ColumnsProps): ColumnDef<Product, keyof Product>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -60,6 +59,25 @@ export const columns: ColumnDef<Product>[] = [
   {
     accessorKey: "image",
     header: "Imagem",
+    cell: ({ row }) => {
+      let image = row.getValue<string>("image");
+
+      if (!image.startsWith("data:image")) {
+        const isPng = image.includes("iVBORw0KGgo"); // Check if the image is a PNG
+        const base64Prefix = isPng ? "data:image/png;base64," : "data:image/jpeg;base64,";
+        image = `${base64Prefix}${image}`;
+      }
+
+      return (
+        <Image
+          src={image}
+          alt="Product"
+          className="h-10 w-10 object-cover"
+          width={50}
+          height={50}
+        />
+      );
+    },
   },
   {
     accessorKey: "name",
@@ -119,8 +137,6 @@ export const columns: ColumnDef<Product>[] = [
     id: "actions",
     header: () => <div className="text-left">Ações</div>,
     cell: ({ row }) => {
-      const payment = row.original
- 
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild >
@@ -132,12 +148,25 @@ export const columns: ColumnDef<Product>[] = [
           <DropdownMenuContent align="start">
             <DropdownMenuLabel>Ações</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Editar</DropdownMenuItem>
+            <DropdownMenuItem  onClick={() => handleEdit(row.original)}>Editar</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Deletar</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleDelete(row.original)}>Deletar</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       )
     },
   },
+  {
+    accessorKey: "updatedAt",
+    header: "Atualizado em",
+    cell: ({ row }) => {
+      const date = new Date(row.getValue("updatedAt"));
+      const formattedDate = new Intl.DateTimeFormat("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      }).format(date);
+      return <div className="text-start">{formattedDate}</div>;
+    }
+  }
 ];

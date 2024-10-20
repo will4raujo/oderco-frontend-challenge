@@ -1,5 +1,4 @@
 'use client';
-
 import {
   ColumnDef,
   flexRender,
@@ -22,13 +21,6 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-
 import { Button } from "@/components/ui/button"
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
@@ -47,7 +39,10 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
+    id: false,
+    updatedAt: false,
+  })
   const [rowSelection, setRowSelection] = useState({})
 
   const table = useReactTable({
@@ -85,8 +80,10 @@ export function DataTable<TData, TValue>({
         </div>
         <Select
           onValueChange={(value) => {
-            if (value === "recentes") {
-              table.setSorting([{ id: "created_at", desc: true }]);
+            if (value === "recents") {
+              table.setSorting([{ id: "updatedAt", desc: true }]);
+            } else if (value === "name") {
+              table.setSorting([{ id: "name", desc: false }]);
             } else {
               table.setSorting([]);
             }
@@ -96,8 +93,8 @@ export function DataTable<TData, TValue>({
             <SelectValue placeholder="Ordenar por" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="recentes">Mais Recentes</SelectItem>
-            <SelectItem value="nome">Nome</SelectItem>
+            <SelectItem value="recents">Mais Recentes</SelectItem>
+            <SelectItem value="name">Nome</SelectItem>
           </SelectContent>
         </Select>
       </div>
