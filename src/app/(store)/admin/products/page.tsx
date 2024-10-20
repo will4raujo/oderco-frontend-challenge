@@ -11,7 +11,7 @@ import { DialogDescription } from "@radix-ui/react-dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { ImageUp } from "lucide-react";
 import { Category } from "@/models/category.model";
-import { Toaster } from "@/components/ui/toaster"
+import { Toaster } from "@/components/ui/toaster";
 import { Product } from "@/models/product.model";
 import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
@@ -83,7 +83,8 @@ export default function ProductsPage() {
   };
 
   const handleCategoryChange = (value: string) => {
-    const category = categories.find((category) => category.id === value);
+    const categoryId = parseInt(value, 10);
+    const category = categories.find((category) => category.id === categoryId);
     setSelectedCategory(category || null);
   }
 
@@ -227,7 +228,7 @@ export default function ProductsPage() {
       setDescription(editingProduct.description);
       setImage(editingProduct.image);
       setImageName(editingProduct.name);
-      setSelectedCategory(categories.find((category) => category.name === editingProduct.category) || null);
+      setSelectedCategory(categories.find((category) => category.id === editingProduct.categoryId) || null);
     }
   }, [editingProduct]);
 
@@ -266,7 +267,7 @@ export default function ProductsPage() {
                   </SelectTrigger>
                   <SelectContent>
                     {categories.map((category) => (
-                      <SelectItem key={category.id} value={category.id}>
+                      <SelectItem key={category.id} value={category.id.toString()}>
                         {category.name}
                       </SelectItem>
                     ))}
