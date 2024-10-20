@@ -146,10 +146,10 @@ export default function CatalogPage() {
             {categories.map((category) => (
               <div key={category.id} className="flex gap-2 items-center">
                 <Checkbox
-                  id={category.id.toString()}
+                  id={category.id.toString()} // `toString()` to use as the ID in the HTML
                   onCheckedChange={(checked) => {
                     setCategoriesSelected((prev) =>
-                      checked ? [...prev, category.id] : prev.filter(id => id !== category.id)
+                      checked ? [...prev, Number(category.id)] : prev.filter(id => id !== Number(category.id))
                     );
                   }}
                 />
