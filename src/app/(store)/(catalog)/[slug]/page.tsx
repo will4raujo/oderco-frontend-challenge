@@ -8,7 +8,7 @@ import RelatedProduct from "@/components/molecules/related-product";
 import convertImagePath from '@/utils/convert-image-path';
 import formatPrice from '@/utils/format-price';
 import { useToast } from "@/hooks/use-toast";
-import { Toaster } from "@/components/ui/toaster";
+import { useCart } from '@/contexts/cart-context';
 interface ProductDetailPageProps {
   params: {
     slug: string;
@@ -31,6 +31,14 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   const { toast } = useToast();
   const [product, setProduct] = useState<Product | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+  const { addToCart } = useCart();
+
+  function handleAddToCart() {
+    if (product) {
+      addToCart(product.id);
+      toast({ description: "Produto adicionado ao carrinho!" });
+    }
+  }
 
   useEffect(() => {
     const loadProductData = async () => {
@@ -69,7 +77,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
             <span className="text-md lg:text-xl min-w-[350px] lg:min-w-[440px]">Frete grátis para compras acima de R$ 900,00.</span>
           </div>
 
-          <Button className="h-16 text-2xl mb-6" onClick={() => toast({ description: "Produto adicionado ao carrinho!" })}>
+          <Button className="h-16 text-2xl mb-6" onClick={handleAddToCart}>
             Adicionar ao Carrinho
             <ShoppingCart className="ml-4" />
           </Button>
@@ -90,7 +98,6 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
           <RelatedProduct key={relatedProduct.id} product={relatedProduct} />
         ))}
       </div>
-      <Toaster />
     </main>
   );
 }
