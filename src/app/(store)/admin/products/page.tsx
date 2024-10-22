@@ -238,8 +238,7 @@ export default function ProductsPage() {
     <>
       {user === null ?
         <div className="flex flex-col gap-10 items-center justify-center">
-          <h1 className="text-2xl font-bold ">Você não está logado</h1>
-          <Button className="w-[300px]" onClick={() => window.location.href = '/login'}>Clique aqui para fazer login</Button>
+          <h1 className="text-2xl font-bold ">Você não está logado, por favor faça login para acessar esta página.</h1>
         </div>
         :
         <main className='flex flex-col mx-auto lg:w-[1024px] xl:w-[1280px] 2xl:w-[1440px] px-10 my-4'>
