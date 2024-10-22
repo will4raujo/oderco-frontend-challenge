@@ -33,11 +33,14 @@ export default function Header() {
       </div>
       <div className="flex items-center gap-4 md:gap-14">
         {isAuthenticated ? (
-            <Avatar className="h-8">
-              <div className="  bg-[#14b7dc] border-[#141034] border-[1px] rounded-full w-8 h-8 flex justify-center items-center">
-                <User color="#141034" />
-              </div>
-            </Avatar>
+            <>
+              {user !== null && <span className="text-white text-sm">Olá, {JSON.parse(user).email}</span>}
+              <Avatar className="h-8">
+                <div className="  bg-[#14b7dc] border-[#141034] border-[1px] rounded-full w-8 h-8 flex justify-center items-center">
+                  <User color="#141034" />
+                </div>
+              </Avatar>
+            </>
         ) : (
           <>
             <div className="relative cursor-pointer" onClick={() => router.push('/cart')}>
