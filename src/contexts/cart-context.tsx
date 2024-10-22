@@ -47,6 +47,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setItems((prevItems) => {
       return prevItems.filter((item) => item.productId !== productId);
     });
+    localStorage.setItem('@wa-store:cart', JSON.stringify(items.filter((item) => item.productId !== productId)));
   }
 
   function clearCart() {

@@ -9,6 +9,7 @@ import { CircleCheckBig } from "lucide-react";
 import { useEffect, useState } from "react";
 
 async function getProductsData(items: { productId: string }[]): Promise<Product[]> {
+  if (items.length === 0) return [];
   const products = await fetch(`http://localhost:8080/products?${items.map(item => `id=${item.productId}`).join('&')}`);
   return products.json();
 }
@@ -38,12 +39,17 @@ export default function CartPage() {
     setProductsFromCart([]);
   }
 
+  const handleRemoveFromCart = (productId: string) => {
+    removeFromCart(productId);
+  }
+
   useEffect(() => {
-    if (items.length > 0) {
-      getProductsData(items)
-        .then((products) => setProductsFromCart(products))
-        .catch((error) => console.error('Error fetching products:', error));
-    }
+    const fetchProducts = async () => {
+      const products = await getProductsData(items);
+      setProductsFromCart(products);
+    };
+
+    fetchProducts();
   }, [items, clearCart]);
 
 
@@ -53,13 +59,14 @@ export default function CartPage() {
         <h2 className="text-2xl font-bold uppercase">seu carrinho</h2>
         <span>{`Total ${items.length} item(s): `}<b>{formatedTotalValue}</b></span>
         <div className="flex flex-col gap-4 flex-1">
+          {productsFromCart.length === 0 && <span>Seu carrinho está vazio</span>}
           {productsFromCart.map((product) => (
             <CartItemDetails
               key={product.id}
               product={product}
               quantity={quantities[product.id] || 1}
               onQuantityChange={(quantity) => handleQuantityChange(product.id, quantity)}
-              onRemove={() => removeFromCart(product.id)}
+              onRemove={() => handleRemoveFromCart(product.id)}
             />
           ))}
         </div>
