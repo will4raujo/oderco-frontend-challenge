@@ -46,7 +46,7 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="p-2 md:p-4 grid place-items-center h-screen">
+    <main className="p-2 md:p-4 grid place-items-center h-screen bg-zinc-300">
       <Card className="w-[350px] md:w-[400px] mx-auto px-4 py-8 md:p-8 flex flex-col gap-8">
         <Image src={logo} alt="logo" className="w-[200px] self-center scale-[1.5]" />
         <Form {...form}>
@@ -76,6 +76,7 @@ export default function LoginPage() {
                         type={showPassword ? "text" : "password"}
                         placeholder="Senha"
                         {...field}
+                        
                       />
                       <button
                         type="button"
