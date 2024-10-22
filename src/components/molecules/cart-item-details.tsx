@@ -1,13 +1,9 @@
 import { Card } from "../ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import { Product } from "@/models/product.model";
 
 type CartItemDetailsProps = {
-  product: {
-    id: string;
-    name: string;
-    price: number;
-    image: string;
-  }
+  product: Product;
   quantity: number;
   onRemove: () => void;
   onQuantityChange: (quantity: number) => void;
@@ -24,7 +20,7 @@ export default function CartiItemsDetails({ product, quantity, onRemove, onQuant
       
       <div className="flex-1">
         <h3 className="font-medium text-lg mb-2">{product.name}</h3>
-        <Select>
+        <Select onValueChange={(value) => onQuantityChange(Number(value))} value={quantity.toString()}>
             <SelectTrigger className="w-[60px]">
               <SelectValue placeholder="1" />
             </SelectTrigger>
@@ -32,6 +28,8 @@ export default function CartiItemsDetails({ product, quantity, onRemove, onQuant
               <SelectItem value="1">1</SelectItem>
               <SelectItem value="2">2</SelectItem>
               <SelectItem value="3">3</SelectItem>
+              <SelectItem value="4">4</SelectItem>
+              <SelectItem value="5">5</SelectItem>
             </SelectContent>
           </Select>
       </div>
