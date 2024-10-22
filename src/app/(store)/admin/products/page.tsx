@@ -60,6 +60,8 @@ export default function ProductsPage() {
 
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
+  const user = localStorage.getItem('@wa-store:user');
+
   const handleEdit = (product: Product) => {
     setEditingProduct(product);
     setOpen(true);
@@ -101,7 +103,7 @@ export default function ProductsPage() {
       const file = files[0];
 
       if (!['image/jpeg', 'image/png'].includes(file.type)) {
-        toast({ 
+        toast({
           description: "Formato de imagem inválido. Apenas JPEG e PNG são aceitos.",
           variant: "destructive",
           title: "Erro ao selecionar imagem"
@@ -151,7 +153,7 @@ export default function ProductsPage() {
     if (!validation.success) {
       const newErrors = validation.error.flatten().fieldErrors;
       setErrors(newErrors);
-      toast({ 
+      toast({
         description: "Por favor, corrija o(s) campo(s) em destaque.",
         variant: "destructive",
         title: "Erro ao cadastrar produto."
@@ -233,117 +235,126 @@ export default function ProductsPage() {
   }, [editingProduct]);
 
   return (
-    <main className='flex flex-col mx-auto lg:w-[1024px] xl:w-[1280px] 2xl:w-[1440px] px-10 my-4'>
-      <h1 className='text-2xl font-bold'>Produtos</h1>
-      <div className='flex gap-4 justify-end'>
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button variant="default" className="px-10">Cadastrar</Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle>Cadastrar produto</DialogTitle>
-              <DialogDescription className="text-sm">Preencha os campos abaixo para cadastrar um novo produto.</DialogDescription>
-            </DialogHeader>
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-              <div className="flex items-center space-x-2">
-                <div className="grid flex-1 gap-2">
-                  <Label htmlFor="name" className={errors.name ? 'text-red-500' : ''}>
-                    Nome
-                  </Label>
-                  <Input
-                    id="name"
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className={errors.name ? 'border-red-500' : ''}
+    <>
+      {user === null ?
+        <div className="flex flex-col gap-10 items-center justify-center">
+          <h1 className="text-2xl font-bold ">Você não está logado</h1>
+          <Button className="w-[300px]" onClick={() => window.location.href = '/login'}>Clique aqui para fazer login</Button>
+        </div>
+        :
+        <main className='flex flex-col mx-auto lg:w-[1024px] xl:w-[1280px] 2xl:w-[1440px] px-10 my-4'>
+          <h1 className='text-2xl font-bold'>Produtos</h1>
+          <div className='flex gap-4 justify-end'>
+            <Dialog open={open} onOpenChange={setOpen}>
+              <DialogTrigger asChild>
+                <Button variant="default" className="px-10">Cadastrar</Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Cadastrar produto</DialogTitle>
+                  <DialogDescription className="text-sm">Preencha os campos abaixo para cadastrar um novo produto.</DialogDescription>
+                </DialogHeader>
+                <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                  <div className="flex items-center space-x-2">
+                    <div className="grid flex-1 gap-2">
+                      <Label htmlFor="name" className={errors.name ? 'text-red-500' : ''}>
+                        Nome
+                      </Label>
+                      <Input
+                        id="name"
+                        type="text"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        className={errors.name ? 'border-red-500' : ''}
+                      />
+                    </div>
+                  </div>
+                  <div className="flex gap-4 items-end">
+                    <Select onValueChange={handleCategoryChange}>
+                      <SelectTrigger className={errors.category ? 'border-red-500' : ''}>
+                        <SelectValue placeholder="Categoria" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {categories.map((category) => (
+                          <SelectItem key={category.id} value={category.id.toString()}>
+                            {category.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <div>
+                      <Label htmlFor="price" className={errors.price ? 'text-red-500' : ''}>
+                        Preço
+                      </Label>
+                      <Input
+                        id="price"
+                        type="text"
+                        placeholder="Preço"
+                        value={price}
+                        onChange={handlePriceChange}
+                        className={errors.price ? 'border-red-500' : ''}
+                      />
+                    </div>
+                  </div>
+                  <Textarea
+                    placeholder="Descrição"
+                    minLength={3}
+                    maxLength={2500}
+                    className={`min-h-32 max-h-52 ${errors.description ? 'border-red-500' : ''}`}
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
                   />
-                </div>
-              </div>
-              <div className="flex gap-4 items-end">
-                <Select onValueChange={handleCategoryChange}>
-                  <SelectTrigger className={errors.category ? 'border-red-500' : ''}>
-                    <SelectValue placeholder="Categoria" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {categories.map((category) => (
-                      <SelectItem key={category.id} value={category.id.toString()}>
-                        {category.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <div>
-                  <Label htmlFor="price" className={errors.price ? 'text-red-500' : ''}>
-                    Preço
-                  </Label>
-                  <Input
-                    id="price"
-                    type="text"
-                    placeholder="Preço"
-                    value={price}
-                    onChange={handlePriceChange}
-                    className={errors.price ? 'border-red-500' : ''}
-                  />
-                </div>
-              </div>
-              <Textarea
-                placeholder="Descrição"
-                minLength={3}
-                maxLength={2500}
-                className={`min-h-32 max-h-52 ${errors.description ? 'border-red-500' : ''}`}
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-              />
-              <div className="flex gap-4 items-center">
-                {isFileInputVisible && (
-                  <Input
-                    id="image"
-                    type="file"
-                    ref={fileInputRef}
-                    style={{ display: 'none' }}
-                    onChange={handleFileChange}
-                  />
-                )}
-                <Button type="button" onClick={handleButtonClick} className={`overflow-hidden overflow-ellipsis flex gap-2 w-full text-center ${errors.image ? 'border-red-500' : ''} `} variant="outline" >
-                  <ImageUp />
-                  {imageName || 'Selecionar imagem'}
-                </Button>
-              </div>
-              <DialogFooter className="justify-start md:justify-between">
-                <DialogClose asChild>
-                <Button type="button" variant="destructive" onClick={ () => setIsAlertDialogOpen(true)}>Cancelar</Button>
-                </DialogClose>
-                <Button type="submit" disabled={loading} variant="default">
-                  {loading ? <ReactLoading type="spin" color="#fff" height={20} width={20} /> : 'Cadastrar'}
-                </Button>
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
-        <AlertDialog open={isAlertDialogOpen} onOpenChange={setIsAlertDialogOpen}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Cancelar Cadastro</AlertDialogTitle>
-              <AlertDialogDescription>
-                Tem certeza de que deseja cancelar o cadastro do produto? Todas as informações não salvas serão perdidas.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel onClick={() => setIsAlertDialogOpen(false)}>Não</AlertDialogCancel>
-              <AlertDialogAction onClick={() => {
-                setOpen(false);
-                setIsAlertDialogOpen(false);
-                handleReset();
-              }}>
-                Sim
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      </div>
-      <DataTable columns={columns({ handleEdit, handleDelete })} data={data}/>
-      <Toaster />
-    </main>
+                  <div className="flex gap-4 items-center">
+                    {isFileInputVisible && (
+                      <Input
+                        id="image"
+                        type="file"
+                        ref={fileInputRef}
+                        style={{ display: 'none' }}
+                        onChange={handleFileChange}
+                      />
+                    )}
+                    <Button type="button" onClick={handleButtonClick} className={`overflow-hidden overflow-ellipsis flex gap-2 w-full text-center ${errors.image ? 'border-red-500' : ''} `} variant="outline" >
+                      <ImageUp />
+                      {imageName || 'Selecionar imagem'}
+                    </Button>
+                  </div>
+                  <DialogFooter className="justify-start md:justify-between">
+                    <DialogClose asChild>
+                      <Button type="button" variant="destructive" onClick={() => setIsAlertDialogOpen(true)}>Cancelar</Button>
+                    </DialogClose>
+                    <Button type="submit" disabled={loading} variant="default">
+                      {loading ? <ReactLoading type="spin" color="#fff" height={20} width={20} /> : 'Cadastrar'}
+                    </Button>
+                  </DialogFooter>
+                </form>
+              </DialogContent>
+            </Dialog>
+            <AlertDialog open={isAlertDialogOpen} onOpenChange={setIsAlertDialogOpen}>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Cancelar Cadastro</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Tem certeza de que deseja cancelar o cadastro do produto? Todas as informações não salvas serão perdidas.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel onClick={() => setIsAlertDialogOpen(false)}>Não</AlertDialogCancel>
+                  <AlertDialogAction onClick={() => {
+                    setOpen(false);
+                    setIsAlertDialogOpen(false);
+                    handleReset();
+                  }}>
+                    Sim
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+          <DataTable columns={columns({ handleEdit, handleDelete })} data={data} />
+          <Toaster />
+        </main>
+      }
+    </>
   )
 }

@@ -41,9 +41,8 @@ export default function LoginPage() {
   })
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
-    console.log(data);
     router.push('/admin/products');
-
+    localStorage.setItem('@wa-store:user', JSON.stringify(data));
   };
 
   return (
