@@ -1,12 +1,13 @@
 'use client';
 import logo from "../../../public/logo.svg";
 import { Menu, ShoppingCart, User } from "lucide-react";
-import { Avatar, AvatarImage } from "../ui/avatar";
+import { Avatar } from "../ui/avatar";
 import { Button } from "../ui/button";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useCart } from "@/contexts/cart-context";
 import { useRouter, usePathname } from "next/navigation";
+import ReactLoading from 'react-loading';
 
 export default function Header() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -14,8 +15,10 @@ export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
   const user = localStorage.getItem('@wa-store:user');
+  const [loading, setLoading] = useState(false);
 
   const handleNavigateToLogin = () => {
+    setLoading(true);
     router.push('/login');
   }
 
@@ -47,7 +50,9 @@ export default function Header() {
               <ShoppingCart color="#14b7dc" />
               <span className="rounded-xl bg-white absolute -right-2 -top-1 w-4 h-3 text-sm flex items-center justify-center font-bold">{items.length}</span>
             </div>
-            <Button onClick={handleNavigateToLogin} variant="outline" className="w-[150px]">Entrar</Button>
+            <Button onClick={handleNavigateToLogin} variant="outline" className="w-[150px]" disabled={loading}>
+              {loading ? <ReactLoading type="spin" color="#14b7dc" height={20} width={20} /> : 'Entrar'}
+            </Button>
           </>
         )}
       </div>

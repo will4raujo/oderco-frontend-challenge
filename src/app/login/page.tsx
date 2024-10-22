@@ -18,6 +18,7 @@ import logo from "../../../public/logo-admin.svg";
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import ReactLoading from 'react-loading';
 
 const formSchema = z.object({
   email: z.string().email({
@@ -30,6 +31,7 @@ const formSchema = z.object({
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -41,6 +43,7 @@ export default function LoginPage() {
   })
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
+    setLoading(true);
     router.push('/admin/products');
     localStorage.setItem('@wa-store:user', JSON.stringify(data));
   };
@@ -91,7 +94,9 @@ export default function LoginPage() {
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full">Entrar</Button>
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? <ReactLoading type="spin" color="#14b7dc" height={20} width={20} /> : 'Entrar'}
+            </Button>
           </form>
         </Form>
       </Card>
