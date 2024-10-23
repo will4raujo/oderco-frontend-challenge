@@ -59,8 +59,7 @@ export default function ProductsPage() {
   const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false);
 
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-
-  const user = localStorage.getItem('@wa-store:user');
+  const [user, setUser] = useState<string | null>(null);
 
   const handleEdit = (product: Product) => {
     setEditingProduct(product);
@@ -234,6 +233,15 @@ export default function ProductsPage() {
     }
 
     fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedUser = localStorage.getItem('@wa-store:user');
+      if (storedUser) {
+        setUser(storedUser);
+      }
+    }
   }, []);
 
   useEffect(() => {
