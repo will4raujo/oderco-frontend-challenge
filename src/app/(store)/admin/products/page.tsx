@@ -37,7 +37,7 @@ const formSchema = z.object({
   name: z.string().min(3, { message: 'O nome deve conter no mínimo 3 caracteres' }),
   price: z.number().min(0.01, { message: 'O preço deve ser maior que 0' }),
   description: z.string().min(3, { message: 'A descrição deve conter no mínimo 3 caracteres' }),
-  category: z.string().min(1, { message: 'Selecione uma categoria' }),
+  categoryId: z.string().min(1, { message: 'Selecione uma categoria' }),
   image: z.string().min(1, { message: 'Selecione uma imagem' }),
 })
 
@@ -85,8 +85,7 @@ export default function ProductsPage() {
   };
 
   const handleCategoryChange = (value: string) => {
-    const categoryId = parseInt(value, 10);
-    const category = categories.find((category) => category.id === categoryId);
+    const category = categories.find((category) => category.id === value);
     setSelectedCategory(category || null);
   }
 
@@ -137,18 +136,31 @@ export default function ProductsPage() {
     setErrors({});
   }
 
+  function mapCategoryNames(products: Product[], categories: Category[]) {
+    const categoryMap = categories.reduce((map, category) => {
+      map[category.id] = category.name;
+      return map;
+    }, {} as { [key: string]: string });
+
+    return products.map(product => ({
+      ...product,
+      categoryName: categoryMap[product.categoryId],
+    }));
+  }
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const productData = {
       name,
+      slug: name.toLowerCase().replace(/ /g, '-'),
       price: parseFloat(price.replace(/[^0-9]/g, '')) / 100,
       description,
-      category: selectedCategory?.name,
+      categoryId: selectedCategory?.id,
       image,
       cretedAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-
+    
     const validation = formSchema.safeParse(productData);
     if (!validation.success) {
       const newErrors = validation.error.flatten().fieldErrors;
@@ -211,16 +223,15 @@ export default function ProductsPage() {
 
   useEffect(() => {
     async function fetchData() {
-      const result = await getData();
-      setData(result);
+      const products = await getData();
+      const categoriesData = await getCategoryOptions();
+      setCategories(categoriesData);
+
+      const productsWithCategoryNames = mapCategoryNames(products, categoriesData);
+      setData(productsWithCategoryNames);
     }
 
-    async function fetchCategories() {
-      const result = await getCategoryOptions();
-      setCategories(result);
-    }
     fetchData();
-    fetchCategories();
   }, []);
 
   useEffect(() => {
@@ -230,9 +241,12 @@ export default function ProductsPage() {
       setDescription(editingProduct.description);
       setImage(editingProduct.image);
       setImageName(editingProduct.name);
-      setSelectedCategory(categories.find((category) => category.id === editingProduct.categoryId) || null);
+      const category = categories.find((category) => category.id === editingProduct.categoryId);
+      if (category) {
+        setSelectedCategory(category);
+      }
     }
-  }, [editingProduct]);
+  }, [editingProduct, categories]);
 
   return (
     <>
@@ -269,13 +283,13 @@ export default function ProductsPage() {
                     </div>
                   </div>
                   <div className="flex gap-4 items-end">
-                    <Select onValueChange={handleCategoryChange}>
+                    <Select value={selectedCategory?.id || ""} onValueChange={handleCategoryChange}>
                       <SelectTrigger className={errors.category ? 'border-red-500' : ''}>
                         <SelectValue placeholder="Categoria" />
                       </SelectTrigger>
                       <SelectContent>
                         {categories.map((category) => (
-                          <SelectItem key={category.id} value={category.id.toString()}>
+                          <SelectItem key={category.id} value={category.id}>
                             {category.name}
                           </SelectItem>
                         ))}
@@ -323,7 +337,7 @@ export default function ProductsPage() {
                       <Button type="button" variant="destructive" onClick={() => setIsAlertDialogOpen(true)}>Cancelar</Button>
                     </DialogClose>
                     <Button type="submit" disabled={loading} variant="default">
-                      {loading ? <ReactLoading type="spin" color="#fff" height={20} width={20} /> : 'Cadastrar'}
+                      {loading ? <ReactLoading type="spin" color="#fff" height={20} width={20} /> : 'Salvar'}
                     </Button>
                   </DialogFooter>
                 </form>
