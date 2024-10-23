@@ -193,6 +193,7 @@ export default function ProductsPage() {
         handleReset();
       } catch (error) {
         toast({ description: "Erro ao editar produto." });
+        console.error(error);
         setLoading(false);
       }
       return;
@@ -215,6 +216,7 @@ export default function ProductsPage() {
         setLoading(false);
         handleReset();
       } catch (error) {
+        console.error(error);
         toast({ description: "Erro ao cadastrar produto." });
         setLoading(false);
       }

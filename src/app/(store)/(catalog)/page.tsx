@@ -110,7 +110,7 @@ export default function CatalogPage() {
 
   useEffect(() => {
     fetchProducts();
-  }, [search, currentPage, sorting, priceRange, categoriesSelected]);
+  }, [search, currentPage, sorting, priceRange, categoriesSelected, fetchProducts]);
 
   useEffect(() => {
     fetchCategories();

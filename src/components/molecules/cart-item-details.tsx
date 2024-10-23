@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Card } from "../ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Product } from "@/models/product.model";
@@ -16,10 +17,12 @@ export default function CartiItemsDetails({ product, quantity, onRemove, onQuant
 
   return (
     <Card className="relative w-full flex  justify-between p-4 border rounded-md shadow-sm">
-      <img 
+      <Image
         src={product.image} 
         alt={product.name} 
-        className="w-20 h-20 object-contain mr-4"
+        className="object-contain mr-4"
+        width={20}
+        height={20}
       />
       
       <div className="flex-1">
