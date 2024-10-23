@@ -95,7 +95,7 @@ export const columns = ({ handleEdit, handleDelete }: ColumnsProps): ColumnDef<P
     },
   },
   {
-    accessorKey: "categoryId",
+    accessorKey: "categoryName",
     header: ({ column }) => {
       return (
         <Button

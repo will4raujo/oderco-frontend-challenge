@@ -36,7 +36,8 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   function handleAddToCart() {
     if (product) {
       addToCart(product.id);
-      toast({ description: "Produto adicionado ao carrinho!" });
+      toast({ 
+        description: "Produto adicionado ao carrinho!" });
     }
   }
 

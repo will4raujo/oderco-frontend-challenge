@@ -37,7 +37,7 @@ async function getData(
     let url = `http://localhost:8080/products?_page=${page}&_limit=${limit}`;
 
     if (search) {
-      url += `&name_like=${search}`;
+      url += `&q=${search}`;
     }
 
     if (sorting) {
@@ -133,10 +133,10 @@ export default function CatalogPage() {
           <Card className="h-full flex flex-col gap-4 border-zinc-400 border-[1px] p-4">
             <div className="flex justify-between">
               <span>Preço</span>
-              <span>R$ 0 a R$ 10.000,00</span>
+              <span>R$ {priceRange[0]} - R$ {priceRange[1]}</span>
             </div>
             <Slider
-              max={1000}
+              max={10000}
               step={100}
               value={priceRange}
               onValueChange={(value) => setPriceRange(value)}
@@ -146,7 +146,7 @@ export default function CatalogPage() {
             {categories.map((category) => (
               <div key={category.id} className="flex gap-2 items-center">
                 <Checkbox
-                  id={category.id.toString()} // `toString()` to use as the ID in the HTML
+                  id={category.id}
                   onCheckedChange={(checked) => {
                     setCategoriesSelected((prev) =>
                       checked ? [...prev, Number(category.id)] : prev.filter(id => id !== Number(category.id))
@@ -155,7 +155,7 @@ export default function CatalogPage() {
                 />
                 <div className="grid gap-1.5 leading-none">
                   <label
-                    htmlFor={category.id.toString()}
+                    htmlFor={category.id}
                     className="text-sm font-medium leading-none cursor-pointer"
                   >
                     {category.name}
@@ -165,7 +165,7 @@ export default function CatalogPage() {
             ))}
           </Card>
         </aside>
-        <section className="py-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 grid-rows-[46px_auto]">
+        <section className="py-6 grid grid-cols-1 md:grid-cols-2 xl:min-w-[1148px] xl:grid-cols-4 gap-4 grid-rows-[46px_auto]">
           <div className="w-full xl:w-[50%] col-span-1 md:col-span-2 xl:col-span-4 relative">
             <Search className="absolute top-[18px] left-4 transform -translate-y-1/2" size={17} color="#141034" />
             <Input placeholder="Busca por nome" className="pl-10" value={search} onChange={(event) => setSearch(event.target.value)} />

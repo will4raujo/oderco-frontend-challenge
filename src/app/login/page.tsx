@@ -18,6 +18,7 @@ import logo from "../../../public/logo-admin.svg";
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import ReactLoading from 'react-loading';
 
 const formSchema = z.object({
   email: z.string().email({
@@ -30,6 +31,7 @@ const formSchema = z.object({
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -41,13 +43,13 @@ export default function LoginPage() {
   })
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
-    console.log(data);
+    setLoading(true);
     router.push('/admin/products');
-
+    localStorage.setItem('@wa-store:user', JSON.stringify(data));
   };
 
   return (
-    <main className="p-2 md:p-4 grid place-items-center h-screen">
+    <main className="p-2 md:p-4 grid place-items-center h-screen bg-zinc-300">
       <Card className="w-[350px] md:w-[400px] mx-auto px-4 py-8 md:p-8 flex flex-col gap-8">
         <Image src={logo} alt="logo" className="w-[200px] self-center scale-[1.5]" />
         <Form {...form}>
@@ -77,6 +79,7 @@ export default function LoginPage() {
                         type={showPassword ? "text" : "password"}
                         placeholder="Senha"
                         {...field}
+                        
                       />
                       <button
                         type="button"
@@ -91,7 +94,9 @@ export default function LoginPage() {
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full">Entrar</Button>
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? <ReactLoading type="spin" color="#14b7dc" height={20} width={20} /> : 'Entrar'}
+            </Button>
           </form>
         </Form>
       </Card>

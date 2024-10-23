@@ -1,6 +1,7 @@
 import { Card } from "../ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Product } from "@/models/product.model";
+import formatPrice from "@/utils/format-price";
 
 type CartItemDetailsProps = {
   product: Product;
@@ -10,6 +11,9 @@ type CartItemDetailsProps = {
 };
 
 export default function CartiItemsDetails({ product, quantity, onRemove, onQuantityChange }: CartItemDetailsProps) {
+
+  const formatedPrice = formatPrice(product.price * quantity);
+
   return (
     <Card className="relative w-full flex  justify-between p-4 border rounded-md shadow-sm">
       <img 
@@ -41,7 +45,7 @@ export default function CartiItemsDetails({ product, quantity, onRemove, onQuant
         >
           &times;
         </button>
-        <span className="text-xl font-semibold self-end">R$ {product.price.toFixed(2)}</span>
+        <span className="text-xl font-semibold self-end">{formatedPrice}</span>
       </div>
     </Card>
   );
