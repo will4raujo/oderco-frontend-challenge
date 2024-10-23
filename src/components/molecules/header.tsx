@@ -14,7 +14,7 @@ export default function Header() {
   const { items } = useCart();
   const router = useRouter();
   const pathname = usePathname();
-  const user = localStorage.getItem('@wa-store:user');
+  const [user, setUser] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handleNavigateToLogin = () => {
@@ -32,6 +32,15 @@ export default function Header() {
       setIsAuthenticated(true);
     }
   }, [pathname, user]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedUser = localStorage.getItem('@wa-store:user');
+      if (storedUser) {
+        setUser(storedUser);
+      }
+    }
+  }, []);
 
   return (
     <header className=" bg-[#141034] h-16 p-4 flex justify-between items-center border-b-white border-b-[1px]">
