@@ -262,7 +262,7 @@ export default function ProductsPage() {
               <DialogTrigger asChild>
                 <Button variant="default" className="px-10">Cadastrar</Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-md">
+              <DialogContent className="sm:max-w-md lg:max-w-[800px]">
                 <DialogHeader>
                   <DialogTitle>Cadastrar produto</DialogTitle>
                   <DialogDescription className="text-sm">Preencha os campos abaixo para cadastrar um novo produto.</DialogDescription>
