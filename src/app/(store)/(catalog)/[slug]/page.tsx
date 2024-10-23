@@ -48,7 +48,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
       setProduct(product);
 
       if (product) {
-        let relatedProducts = await fetchRelatedProducts(product.categoryId);
+        let relatedProducts = await fetchRelatedProducts(Number(product.categoryId));
         relatedProducts = relatedProducts.filter((relatedProduct) => relatedProduct.id !== product.id);
         relatedProducts = relatedProducts.slice(0, 4);
         setRelatedProducts(relatedProducts);
