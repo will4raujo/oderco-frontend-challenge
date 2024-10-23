@@ -24,8 +24,6 @@ export default function ProductCard({ product }: { product: Product }) {
     imagePath = '/fallback-image.png';
   }
 
-  const truncatedName = product.name.length > 44 ? product.name.substring(0, 44) + '...' : product.name;
-
   return (
     <Card 
       className="flex flex-col w-[260px] 2xl:w-[275px] gap-4 border-zinc-400 border-[1px] p-4 h-96 cursor-pointer"

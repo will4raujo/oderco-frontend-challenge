@@ -31,7 +31,7 @@ export default function Header() {
     if (pathname === '/admin/products' && user !== null) {
       setIsAuthenticated(true);
     }
-  }, [pathname]);
+  }, [pathname, user]);
 
   return (
     <header className=" bg-[#141034] h-16 p-4 flex justify-between items-center border-b-white border-b-[1px]">
