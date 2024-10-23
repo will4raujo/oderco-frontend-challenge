@@ -165,7 +165,7 @@ export default function CatalogPage() {
             ))}
           </Card>
         </aside>
-        <section className="py-6 grid grid-cols-1 md:grid-cols-2 xl:min-w-[1148px] xl:grid-cols-4 gap-4 grid-rows-[46px_auto]">
+        <section className="py-6 grid grid-cols-1 md:grid-cols-2 2xl:min-w-[1148px] xl:grid-cols-4 gap-4 grid-rows-[46px_auto]">
           <div className="w-full xl:w-[50%] col-span-1 md:col-span-2 xl:col-span-4 relative">
             <Search className="absolute top-[18px] left-4 transform -translate-y-1/2" size={17} color="#141034" />
             <Input placeholder="Busca por nome" className="pl-10" value={search} onChange={(event) => setSearch(event.target.value)} />
