@@ -22,6 +22,11 @@ export default function Header() {
     router.push('/login');
   }
 
+  const handleNavigateToHome = () => {
+    router.push('/');
+    setIsAuthenticated(false);
+  }
+
   useEffect(() => {
     if (pathname === '/admin/products' && user !== null) {
       setIsAuthenticated(true);
@@ -31,7 +36,7 @@ export default function Header() {
   return (
     <header className=" bg-[#141034] h-16 p-4 flex justify-between items-center border-b-white border-b-[1px]">
       <Menu className="lg:hidden" color="#14b7dc" />
-      <div className="cursor-pointer" onClick={() => router.push('/')}>
+      <div className="cursor-pointer" onClick={handleNavigateToHome}>
         <Image src={logo} alt="logo" className="hidden md:block w-[200px]" />
       </div>
       <div className="flex items-center gap-4 md:gap-14">
