@@ -44,7 +44,6 @@ export default function Header() {
 
   return (
     <header className=" bg-[#141034] h-16 p-4 flex justify-between items-center border-b-white border-b-[1px]">
-      <Menu className="lg:hidden" color="#14b7dc" />
       <div className="cursor-pointer" onClick={handleNavigateToHome}>
         <Image src={logo} alt="logo" className="hidden md:block w-[200px]" />
       </div>
@@ -60,7 +59,7 @@ export default function Header() {
             </>
         ) : (
           <>
-            <div className="relative cursor-pointer" onClick={() => router.push('/cart')}>
+            <div className="relative cursor-pointer mr-2" onClick={() => router.push('/cart')}>
               <ShoppingCart color="#14b7dc" />
               <span className="rounded-xl bg-white absolute -right-2 -top-1 w-4 h-3 text-sm flex items-center justify-center font-bold">{items.length}</span>
             </div>
