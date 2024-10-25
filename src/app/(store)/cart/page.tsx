@@ -7,17 +7,13 @@ import { useCart } from "@/contexts/cart-context";
 import { Product } from "@/models/product.model";
 import { CircleCheckBig } from "lucide-react";
 import { useEffect, useState } from "react";
-
-async function getProductsData(items: { productId: string }[]): Promise<Product[]> {
-  if (items.length === 0) return [];
-  const products = await fetch(`http://localhost:8080/products?${items.map(item => `id=${item.productId}`).join('&')}`);
-  return products.json();
-}
+import { ProductsApi } from "@/services/products.service";
 
 export default function CartPage() {
   const { items, removeFromCart, clearCart } = useCart();
   const [productsFromCart, setProductsFromCart] = useState<Product[]>([]);
   const [quantities, setQuantities] = useState<{ [productId: string]: number }>({});
+  const { getProductsFromCart } = ProductsApi;
 
   const handleQuantityChange = (productId: string, quantity: number) => {
     setQuantities(prevQuantities => ({
@@ -27,7 +23,7 @@ export default function CartPage() {
   };
 
   const totalValue = productsFromCart.reduce((acc, product) => {
-    const quantity = quantities[product.id] || 1;
+    const quantity = quantities[product.id!] || 1;
     return acc + product.price * quantity;
   }, 0);
 
@@ -45,7 +41,7 @@ export default function CartPage() {
 
   useEffect(() => {
     const fetchProducts = async () => {
-      const products = await getProductsData(items);
+      const products = await getProductsFromCart(items);
       setProductsFromCart(products);
     };
 
@@ -64,9 +60,9 @@ export default function CartPage() {
             <CartItemDetails
               key={product.id}
               product={product}
-              quantity={quantities[product.id] || 1}
-              onQuantityChange={(quantity) => handleQuantityChange(product.id, quantity)}
-              onRemove={() => handleRemoveFromCart(product.id)}
+              quantity={quantities[product.id!] || 1}
+              onQuantityChange={(quantity) => handleQuantityChange(product.id!, quantity)}
+              onRemove={() => handleRemoveFromCart(product.id!)}
             />
           ))}
         </div>
