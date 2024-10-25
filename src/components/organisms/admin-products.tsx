@@ -233,7 +233,7 @@ export default function AdminProductsComponent() {
     } else if (!editingProduct) {
       handleReset();
     }
-  }, [editingProduct, categories]);
+  }, [editingProduct, categories, formatPriceFromInput]);
 
   return (
     <>

@@ -46,7 +46,7 @@ export default function CartComponent() {
     };
 
     fetchProducts();
-  }, [items, clearCart]);
+  }, [items, clearCart, getProductsFromCart]);
 
 
   return (

@@ -1,4 +1,4 @@
-"use client"; 
+"use client";
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { Button } from "@/components/ui/button";
@@ -21,12 +21,10 @@ export default function ProductDetailComponent({ params }: ProductDetailPageProp
   const { formatPriceFromLabel } = formatPrice;
 
   function handleAddToCart() {
-    if (product) {
-      product.id && addToCart(product.id);
-      toast({ 
-        description: "Produto adicionado ao carrinho!" 
-      });
-    }
+    addToCart(product!.id!);
+    toast({
+      description: "Produto adicionado ao carrinho!"
+    });
   }
 
   useEffect(() => {
@@ -44,7 +42,7 @@ export default function ProductDetailComponent({ params }: ProductDetailPageProp
     };
 
     loadProductData();
-  }, [params.slug]);
+  }, [params.slug, getProductsWithSlug, getRelatedProducts]);
 
   if (!product) {
     return null;
