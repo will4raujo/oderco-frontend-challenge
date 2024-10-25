@@ -13,7 +13,7 @@ Certifique-se de que o **Node.js** está instalado em sua máquina. Você pode b
      ```
    - Acesse o diretório do projeto:
      ```bash
-     cd nome-do-seu-projeto
+     cd oderco-frontend-challenge
      ```
 
 2. **Instalar Dependências**
@@ -23,17 +23,21 @@ Certifique-se de que o **Node.js** está instalado em sua máquina. Você pode b
      ```
 
 3. **Iniciar o Servidor de Desenvolvimento**
-   - Após a instalação das dependências, execute o seguinte comando para iniciar o servidor de desenvolvimento:
+   - Para iniciar o servidor que simula uma API REST, execute o comando:
      ```bash
      npm run start:json-server
      ```
 4. **Iniciar o frontend em ambiente de desenvolvimento**
-   - Execute o comando para inicializar o projeto e clique na url que o terminal irá disponibilizar.
+   - Para inicializar o frontend do projeto, execute o comando:
    ```bash
    npm run dev
    ```
+   - Em seguida, clique na URL fornecida pelo terminal para acessar o frontend no navegador.
+
 ## Conclusão
 
 Após seguir todos os passos acima, o frontend do projeto deve estar configurado e rodando.
+
+**Observação: Não se preocupe com o login: você pode usar qualquer email e senha no formato de email, contendo "@" e ".", para acessar a área de administração.**
 
 Se você tiver alguma dúvida ou encontrar problemas, não hesite em entrar em contato.
