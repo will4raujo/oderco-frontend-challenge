@@ -59,7 +59,9 @@ export default function AdminProductsComponent() {
   };
 
   const handleCreate = () => {
-    handleReset();
+    if (!editingProduct) {
+      handleReset();
+    }
     setOpen(true);
   }
 
@@ -129,6 +131,7 @@ export default function AdminProductsComponent() {
     setImage("");
     setImageName("");
     setErrors({});
+    setOpen(false);
   }
 
   function mapCategoryNames(products: Product[], categories: Category[]) {
@@ -249,10 +252,12 @@ export default function AdminProductsComponent() {
               <DialogTrigger asChild>
                 <Button variant="default" className="px-10">Cadastrar</Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-md lg:max-w-[800px]">
+              <DialogContent className="sm:max-w-md lg:max-w-[800px] max-h-[80vh] overflow-y-auto p-6">
                 <DialogHeader>
                   <DialogTitle>Cadastrar produto</DialogTitle>
-                  <DialogDescription className="text-sm">Preencha os campos abaixo para cadastrar um novo produto.</DialogDescription>
+                  <DialogDescription className="text-sm">
+                    Preencha os campos abaixo para cadastrar um novo produto.
+                  </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                   <div className="flex items-center space-x-2">
@@ -265,13 +270,13 @@ export default function AdminProductsComponent() {
                         type="text"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                        className={errors.name ? 'border-red-500' : ''}
+                        className={`w-full max-w-full ${errors.name ? 'border-red-500' : ''}`}
                       />
                     </div>
                   </div>
                   <div className="flex gap-4 items-end">
                     <Select value={selectedCategory?.id || ""} onValueChange={handleCategoryChange}>
-                      <SelectTrigger className={errors.category ? 'border-red-500' : ''}>
+                      <SelectTrigger className={`w-full ${errors.category ? 'border-red-500' : ''}`}>
                         <SelectValue placeholder="Categoria" />
                       </SelectTrigger>
                       <SelectContent>
@@ -292,7 +297,7 @@ export default function AdminProductsComponent() {
                         placeholder="Preço"
                         value={price}
                         onChange={handlePriceChange}
-                        className={errors.price ? 'border-red-500' : ''}
+                        className={`max-w-xs ${errors.price ? 'border-red-500' : ''}`}
                       />
                     </div>
                   </div>
@@ -300,7 +305,7 @@ export default function AdminProductsComponent() {
                     placeholder="Descrição"
                     minLength={3}
                     maxLength={2500}
-                    className={`min-h-32 max-h-52 ${errors.description ? 'border-red-500' : ''}`}
+                    className={`w-full min-h-32 max-h-52 ${errors.description ? 'border-red-500' : ''}`}
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                   />
@@ -314,14 +319,26 @@ export default function AdminProductsComponent() {
                         onChange={handleFileChange}
                       />
                     )}
-                    <Button type="button" onClick={handleButtonClick} className={`overflow-hidden overflow-ellipsis flex gap-2 w-full text-center ${errors.image ? 'border-red-500' : ''} `} variant="outline" >
+                    <div className="flex flex-col gap-2">
+                    <Label htmlFor="image" className={errors.image ? 'text-red-500' : ''}>
+                      Imagem
+                    </Label>
+                    <Button
+                      type="button"
+                      onClick={handleButtonClick}
+                      className={`overflow-hidden overflow-ellipsis flex gap-2 max-w-md text-start ${errors.image ? 'border-red-500' : ''}`}
+                      variant="outline"
+                      >
                       <ImageUp />
                       {imageName || 'Selecionar imagem'}
                     </Button>
+                    </div>
                   </div>
                   <DialogFooter className="justify-start md:justify-between">
                     <DialogClose asChild>
-                      <Button type="button" variant="destructive" onClick={() => setIsAlertDialogOpen(true)}>Cancelar</Button>
+                      <Button type="button" variant="destructive" onClick={() => setIsAlertDialogOpen(true)}>
+                        Cancelar
+                      </Button>
                     </DialogClose>
                     <Button type="submit" disabled={loading} variant="default">
                       {loading ? <ReactLoading type="spin" color="#fff" height={20} width={20} /> : 'Salvar'}
@@ -340,11 +357,7 @@ export default function AdminProductsComponent() {
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel onClick={() => setIsAlertDialogOpen(false)}>Não</AlertDialogCancel>
-                  <AlertDialogAction onClick={() => {
-                    setOpen(false);
-                    setIsAlertDialogOpen(false);
-                    handleReset();
-                  }}>
+                  <AlertDialogAction onClick={handleReset}>
                     Sim
                   </AlertDialogAction>
                 </AlertDialogFooter>
