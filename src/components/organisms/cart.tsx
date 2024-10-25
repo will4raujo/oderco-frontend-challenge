@@ -86,7 +86,7 @@ export default function CartComponent() {
 
         <div className="mt-4 h-full flex flex-col justify-between">
           <Dialog>
-            <DialogTrigger asChild onClick={finishPurchase}>
+            <DialogTrigger asChild onClick={finishPurchase} disabled={productsFromCart.length === 0}>
               <Button className="h-16 text-2xl uppercase">Finalizar compra</Button>
             </DialogTrigger>
             <DialogContent className="flex items-center justify-center flex-col gap-10">
