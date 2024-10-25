@@ -17,21 +17,9 @@ import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
 import ReactLoading from 'react-loading';
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
-
-async function getData(): Promise<Product[]> {
-  const response = await fetch('http://localhost:8080/products');
-  return response.json();
-}
-
-async function getCategoryOptions(): Promise<Category[]> {
-  const response = await fetch('http://localhost:8080/categories');
-  return response.json();
-}
-
-function formatToBRL(value: string) {
-  const numericValue = parseFloat(value.replace(/[^0-9]/g, '')) / 100;
-  return numericValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-}
+import { ProductsApi } from "@/services/products.service";
+import { CategoriesApi } from "@/services/categories.service";
+import { formatPrice } from "@/utils/format-price";
 
 const formSchema = z.object({
   name: z.string().min(3, { message: 'O nome deve conter no mínimo 3 caracteres' }),
@@ -51,10 +39,13 @@ export default function ProductsPage() {
   const [image, setImage] = useState<string>("");
   const [imageName, setImageName] = useState("");
   const [isFileInputVisible, setIsFileInputVisible] = useState(false);
+  const { getProducts, update, create } = ProductsApi;
+  const { getCategories } = CategoriesApi;
 
   const [open, setOpen] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
   const { toast } = useToast();
+  const { formatPriceFromInput } = formatPrice;
   const [loading, setLoading] = useState(false);
   const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false);
 
@@ -79,7 +70,7 @@ export default function ProductsPage() {
 
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value;
-    const formattedValue = formatToBRL(rawValue);
+    const formattedValue = formatPriceFromInput(rawValue);
     setPrice(formattedValue);
   };
 
@@ -154,12 +145,12 @@ export default function ProductsPage() {
       slug: name.toLowerCase().replace(/ /g, '-'),
       price: parseFloat(price.replace(/[^0-9]/g, '')) / 100,
       description,
-      categoryId: selectedCategory?.id,
+      categoryId: selectedCategory?.id || "",
       image,
       cretedAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-    
+
     const validation = formSchema.safeParse(productData);
     if (!validation.success) {
       const newErrors = validation.error.flatten().fieldErrors;
@@ -175,13 +166,7 @@ export default function ProductsPage() {
     if (editingProduct) {
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost:8080/products/${editingProduct.id}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(productData),
-        });
+        const response = await update(Number(editingProduct.id), productData);
         if (!response.ok) {
           throw new Error('Erro ao editar produto.');
         }
@@ -199,14 +184,8 @@ export default function ProductsPage() {
     } else {
       try {
         setLoading(true);
-        const response = await fetch('http://localhost:8080/products', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(productData),
-        });
-        if (!response.ok) {
+        const response = create(productData);
+        if (!response) {
           throw new Error('Erro ao cadastrar produto.');
         }
         setErrors({});
@@ -224,8 +203,8 @@ export default function ProductsPage() {
 
   useEffect(() => {
     async function fetchData() {
-      const products = await getData();
-      const categoriesData = await getCategoryOptions();
+      const products = await getProducts();
+      const categoriesData = await getCategories();
       setCategories(categoriesData);
 
       const productsWithCategoryNames = mapCategoryNames(products, categoriesData);
@@ -247,7 +226,7 @@ export default function ProductsPage() {
   useEffect(() => {
     if (editingProduct) {
       setName(editingProduct.name);
-      setPrice(formatToBRL(editingProduct.price.toString()));
+      setPrice(formatPriceFromInput(editingProduct.price.toString()));
       setDescription(editingProduct.description);
       setImage(editingProduct.image);
       setImageName(editingProduct.name);

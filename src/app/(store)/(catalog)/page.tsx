@@ -24,56 +24,8 @@ import { Product } from "@/models/product.model"
 import { useEffect, useState } from "react"
 import { debounce } from "lodash"
 import { Category } from "@/models/category.model"
-
-async function getData(
-  search: string,
-  page: number,
-  limit: number,
-  sorting: string,
-  priceRange: number[],
-  categoriesSelected: number[]
-): Promise<{ products: Product[], totalItems: number }> {
-  try {
-    let url = `http://localhost:8080/products?_page=${page}&_limit=${limit}`;
-
-    if (search) {
-      url += `&q=${search}`;
-    }
-
-    if (sorting) {
-      url += `&_sort=${sorting}&_order=asc`;
-    }
-
-    if (priceRange.length === 2) {
-      url += `&price_gte=${priceRange[0]}&price_lte=${priceRange[1]}`;
-    }
-
-    if (categoriesSelected.length > 0) {
-      const categoriesQuery = categoriesSelected.map(cat => `categoryId=${cat}`).join('&');
-      url += `&${categoriesQuery}`;
-    }
-
-    const response = await fetch(url);
-    const products = await response.json();
-    const totalItems = parseInt(response.headers.get('X-Total-Count') || '0', 10);
-
-    return { products, totalItems };
-  } catch (error) {
-    console.error(error);
-    alert('Verifique se o comando "npm run start:json-server" está rodando, caso contrário, acesse o arquivo README.md para mais informações');
-    return { products: [], totalItems: 0 };
-  }
-}
-
-async function getCategories(): Promise<Category[]> {
-  try {
-    const response = await fetch('http://localhost:8080/categories');
-    return response.json();
-  } catch (error) {
-    console.error(error);
-    return [];
-  }
-}
+import { ProductsApi } from "@/services/products.service"
+import { CategoriesApi } from "@/services/categories.service"
 
 export default function CatalogPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -88,6 +40,8 @@ export default function CatalogPage() {
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const [cache, setCache] = useState<{ [key: string]: Product[] }>({});
+  const { getCatalogProducts} = ProductsApi;
+  const { getCategories } = CategoriesApi;
 
   const fetchProducts = debounce(() => {
     const cacheKey = `${search}-${currentPage}-${sorting}-${priceRange}-${categoriesSelected.join(',')}`;
@@ -95,7 +49,7 @@ export default function CatalogPage() {
     if (cache[cacheKey]) {
       setProducts(cache[cacheKey]);
     } else {
-      getData(search, currentPage, itemsPerPage, sorting, priceRange, categoriesSelected).then(({ products, totalItems }) => {
+      getCatalogProducts({search, currentPage, itemsPerPage, sorting, priceRange, categoriesSelected}).then(({ products, totalItems }) => {
         setProducts(products);
         setTotalItems(totalItems);
         setCache((prevCache) => ({ ...prevCache, [cacheKey]: products }));

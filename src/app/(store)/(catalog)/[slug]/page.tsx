@@ -6,25 +6,14 @@ import { ShoppingCart } from "lucide-react";
 import { Product } from "@/models/product.model";
 import RelatedProduct from "@/components/molecules/related-product";
 import convertImagePath from '@/utils/convert-image-path';
-import formatPrice from '@/utils/format-price';
+import { formatPrice } from '@/utils/format-price';
 import { useToast } from "@/hooks/use-toast";
 import { useCart } from '@/contexts/cart-context';
+import { ProductsApi } from '@/services/products.service';
 interface ProductDetailPageProps {
   params: {
     slug: string;
   };
-}
-
-async function fetchProduct(slug: string): Promise<Product[]> {
-  const response = await fetch(`http://localhost:8080/products?slug=${slug}`);
-  const product = await response.json();
-  return product;
-}
-
-async function fetchRelatedProducts(categoryId: number): Promise<Product[]> {
-  const response = await fetch(`http://localhost:8080/products?categoryId=${categoryId}`);
-  const products = await response.json();
-  return products;
 }
 
 export default function ProductDetailPage({ params }: ProductDetailPageProps) {
@@ -32,24 +21,27 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   const [product, setProduct] = useState<Product | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const { addToCart } = useCart();
+  const { getProductsWithSlug, getRelatedProducts } = ProductsApi;
+  const { formatPriceFromLabel } = formatPrice;
 
   function handleAddToCart() {
     if (product) {
-      addToCart(product.id);
+      product.id && addToCart(product.id);
       toast({ 
-        description: "Produto adicionado ao carrinho!" });
+        description: "Produto adicionado ao carrinho!" 
+      });
     }
   }
 
   useEffect(() => {
     const loadProductData = async () => {
-      const productArray = await fetchProduct(params.slug);
+      const productArray = await getProductsWithSlug(params.slug);
       const product = productArray[0];
       setProduct(product);
 
       if (product) {
-        let relatedProducts = await fetchRelatedProducts(Number(product.categoryId));
-        relatedProducts = relatedProducts.filter((relatedProduct) => relatedProduct.id !== product.id);
+        let relatedProducts = await getRelatedProducts(Number(product.categoryId));
+        relatedProducts = relatedProducts.filter((relatedProduct: { id: number; }) => relatedProduct.id !== product.id);
         relatedProducts = relatedProducts.slice(0, 4);
         setRelatedProducts(relatedProducts);
       }
@@ -63,7 +55,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   }
 
   const imagePath = convertImagePath(product.image);
-  const formattedPrice = formatPrice(product.price);
+  const formattedPrice = formatPriceFromLabel(product.price);
 
   return (
     <main className="p-2 md:p-4 py-6 lg:p-10 max-w-[1440px] mx-auto">

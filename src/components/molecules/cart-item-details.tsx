@@ -2,7 +2,7 @@ import Image from "next/image";
 import { Card } from "../ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Product } from "@/models/product.model";
-import formatPrice from "@/utils/format-price";
+import {formatPrice } from "@/utils/format-price";
 
 type CartItemDetailsProps = {
   product: Product;
@@ -12,8 +12,8 @@ type CartItemDetailsProps = {
 };
 
 export default function CartiItemsDetails({ product, quantity, onRemove, onQuantityChange }: CartItemDetailsProps) {
-
-  const formatedPrice = formatPrice(product.price * quantity);
+  const { formatPriceFromLabel } = formatPrice;
+  const formatedPrice = formatPriceFromLabel(product.price * quantity);
 
   return (
     <Card className="relative w-full flex  justify-between p-4 border rounded-md shadow-sm">
@@ -21,8 +21,8 @@ export default function CartiItemsDetails({ product, quantity, onRemove, onQuant
         src={product.image} 
         alt={product.name} 
         className="object-contain mr-4"
-        width={20}
-        height={20}
+        width={50}
+        height={50}
       />
       
       <div className="flex-1">
