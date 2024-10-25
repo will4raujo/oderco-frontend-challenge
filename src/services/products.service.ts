@@ -48,6 +48,10 @@ const getCatalogProducts = async (params: QueryParams) => {
     const products = await response.json();
     const totalItems = parseInt(response.headers.get('X-Total-Count') || '0', 10);
 
+    if (products.length === 0) {
+      return { products: [], totalItems: 0 };
+    }
+
     return { products, totalItems };
   } catch (error) {
     console.error(error);
