@@ -1,5 +1,6 @@
 import { Product } from "@/models/product.model";
 import { baseUrl } from "./api.service";
+import { toast } from "@/hooks/use-toast";
 
 interface QueryParams {
   search: string;
@@ -10,17 +11,17 @@ interface QueryParams {
   categoriesSelected: number[];
 }
 
+const productsUrl = baseUrl + '/products';
+
 const getProducts = async () => {
   try {
-    const response = await fetch(baseUrl);
+    const response = await fetch(productsUrl);
     return response.json();
   } catch (error) {
     console.error(error);
     return [];
   }
 }
-
-const productsUrl = baseUrl + '/products';
 
 const getCatalogProducts = async (params: QueryParams) => {
   try {
@@ -96,7 +97,7 @@ const create = async (product: Product) => {
   }
 }
 
-const update = async (id: number, product: Product) => {
+const update = async (id: string, product: Product) => {
   try {
     const response = await fetch(`${productsUrl}/${id}`, {
       method: 'PUT',
@@ -113,12 +114,11 @@ const update = async (id: number, product: Product) => {
   }
 }
 
-const remove = async (id: number) => {
+const remove = async (id: string) => {
   try {
     const response = await fetch(`${productsUrl}/${id}`, {
       method: 'DELETE',
     });
-
     return response.json();
   } catch (error) {
     console.error(error);
